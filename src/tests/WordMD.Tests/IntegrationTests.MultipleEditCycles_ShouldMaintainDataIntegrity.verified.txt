@@ -1,0 +1,17 @@
+﻿{
+  Cycle1: # Version 1,
+  Cycle2:
+# Version 2
+
+Updated content.,
+  Cycle3:
+# Version 3
+
+## Section 1
+
+Final version.,
+  FinalImageCount: 1,
+  FinalImages: [
+    final.png
+  ]
+}

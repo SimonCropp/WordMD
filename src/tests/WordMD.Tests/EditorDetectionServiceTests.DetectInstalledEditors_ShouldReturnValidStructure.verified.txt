@@ -1,0 +1,19 @@
+﻿{
+  Editors: [
+    {
+      Name: vscode,
+      DisplayName: Visual Studio Code,
+      HasExecutablePath: true
+    },
+    {
+      Name: typora,
+      DisplayName: Typora,
+      HasExecutablePath: true
+    },
+    {
+      Name: notepad,
+      DisplayName: Notepad,
+      HasExecutablePath: true
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+﻿{
+  EditorOrder: [
+    rider,
+    vscode,
+    typora,
+    markdownmonster,
+    obsidian,
+    notepad
+  ],
+  DefaultEditor: rider
+}

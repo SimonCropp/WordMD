@@ -1,0 +1,45 @@
+﻿{
+  ExtractedMarkdown:
+# Main Title
+
+## Introduction
+
+This is a **bold** statement with *italic* text and `inline code`.
+
+### Features
+
+- Feature 1
+- Feature 2
+  - Nested item
+- Feature 3
+
+#### Code Example
+
+```csharp
+public class Example
+{
+    public void Method()
+    {
+        Console.WriteLine("Hello, World!");
+    }
+}
+```
+
+##### Links and Images
+
+[Link text](https://example.com)
+
+![Alt text](images/screenshot.png)
+
+###### Tables
+
+| Header 1 | Header 2 |
+|----------|----------|
+| Cell 1   | Cell 2   |
+| Cell 3   | Cell 4   |,
+  ImageCount: 1,
+  ImageNames: [
+    screenshot.png
+  ],
+  MarkdownMatches: true
+}

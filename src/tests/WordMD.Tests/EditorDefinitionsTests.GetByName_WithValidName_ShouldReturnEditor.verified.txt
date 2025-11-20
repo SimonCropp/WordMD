@@ -1,0 +1,5 @@
+﻿{
+  Name: vscode,
+  DisplayName: Visual Studio Code,
+  ExecutableName: Code.exe
+}
