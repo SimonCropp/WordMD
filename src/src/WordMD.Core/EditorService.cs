@@ -76,21 +76,14 @@ public class EditorService
 
     private void SaveChangesToDocx(string docxPath, string tempDirectory)
     {
-        try
-        {
-            // Read updated markdown and images from temp directory
-            var (markdown, images) = _docxService.ReadFromDirectory(tempDirectory);
+        // Read updated markdown and images from temp directory
+        var (markdown, images) = _docxService.ReadFromDirectory(tempDirectory);
 
-            // Convert markdown to Word
-            _markdownToWordService.ConvertMarkdownToWord(docxPath, markdown);
+        // Convert markdown to Word
+        _markdownToWordService.ConvertMarkdownToWord(docxPath, markdown);
 
-            // Re-embed markdown and images
-            _docxService.EmbedMarkdown(docxPath, markdown, images);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error saving changes: {ex.Message}");
-        }
+        // Re-embed markdown and images
+        _docxService.EmbedMarkdown(docxPath, markdown, images);
     }
 
     private Process? LaunchEditor(InstalledEditor editor, string filePath)
