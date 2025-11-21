@@ -80,7 +80,7 @@ public class EditorService
         var (markdown, images) = _docxService.ReadFromDirectory(tempDirectory);
 
         // Convert markdown to Word
-        _markdownToWordService.ConvertMarkdownToWord(docxPath, markdown);
+        _markdownToWordService.EmbedMarkdown(docxPath, markdown);
 
         // Re-embed markdown and images
         _docxService.EmbedMarkdown(docxPath, markdown, images);
