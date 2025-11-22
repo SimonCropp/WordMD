@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using WordMD.Core;
 using WordMD.Editors;

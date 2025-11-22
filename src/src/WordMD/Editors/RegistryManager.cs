@@ -8,10 +8,8 @@ public class RegistryManager
     private const string ContextMenuPath = @"SOFTWARE\Classes\.docx\shell";
     private readonly ILogger<RegistryManager> _logger;
 
-    public RegistryManager(ILogger<RegistryManager> logger)
-    {
+    public RegistryManager(ILogger<RegistryManager> logger) =>
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
 
     public void RegisterContextMenu(List<string> editorOrder)
     {
@@ -66,7 +64,7 @@ public class RegistryManager
         }
     }
 
-    private void RegisterDefaultEdit(string wordmdPath)
+    private static void RegisterDefaultEdit(string wordmdPath)
     {
         using var key = Registry.CurrentUser.CreateSubKey($@"{ContextMenuPath}\WordMD Edit");
         key.SetValue("", "Edit with WordMD");
@@ -76,7 +74,7 @@ public class RegistryManager
         commandKey.SetValue("", $"\"{wordmdPath}\" \"%1\"");
     }
 
-    private void RegisterSubmenu(string wordmdPath, List<string> editorOrder)
+    private static void RegisterSubmenu(string wordmdPath, List<string> editorOrder)
     {
         using var key = Registry.CurrentUser.CreateSubKey($@"{ContextMenuPath}\WordMD");
         key.SetValue("", "Edit with WordMD...");

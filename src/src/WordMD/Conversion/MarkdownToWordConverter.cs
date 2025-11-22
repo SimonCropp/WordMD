@@ -176,7 +176,7 @@ public class MarkdownToWordConverter
         }
     }
 
-    private Paragraph CreateCodeBlock(CodeBlock code)
+    private static Paragraph CreateCodeBlock(CodeBlock code)
     {
         var paragraph = new Paragraph();
         var props = new ParagraphProperties(new ParagraphStyleId {Val = "Code"});

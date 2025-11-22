@@ -8,7 +8,7 @@ using WordMD.Editors;
 namespace WordMD;
 
 class Program
-{ static async Task<int> Main(string[] args)
+{ static Task<int> Main(string[] args)
     {
         var services = ConfigureServices();
         var serviceProvider = services.BuildServiceProvider();
@@ -36,7 +36,7 @@ class Program
             docxPathArgument,
             editorNameArgument
         };
-        rootCommand.SetAction(async result =>
+        rootCommand.SetAction(result =>
         {
             var docxPath = result.GetValue(docxPathArgument);
             var editorName = result.GetValue(editorNameArgument);
@@ -45,25 +45,29 @@ class Program
             if (docxPath is null && editorOrder?.Length == 0)
             {
                 // Setup mode
-                await HandleSetupAsync(serviceProvider);
+                return HandleSetupAsync(serviceProvider);
             }
-            else if (docxPath is not null)
+
+            if (docxPath is not null)
             {
                 // Edit mode
-                await HandleEditAsync(serviceProvider, docxPath, editorName);
+                return HandleEditAsync(serviceProvider, docxPath, editorName);
             }
-            else if (editorOrder?.Length > 0)
+
+            if (editorOrder?.Length > 0)
             {
                 // Update editor order
-                await HandleEditorOrderAsync(serviceProvider, editorOrder);
+                return HandleEditorOrderAsync(serviceProvider, editorOrder);
             }
+
+            return Task.CompletedTask;
         });
 
         var parseResult = rootCommand.Parse(args);
-        return await parseResult.InvokeAsync();
+        return parseResult.InvokeAsync();
     }
 
-    private static async Task HandleSetupAsync(ServiceProvider serviceProvider)
+    private static Task HandleSetupAsync(ServiceProvider serviceProvider)
     {
         var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
         var editorConfig = serviceProvider.GetRequiredService<EditorConfiguration>();
@@ -81,10 +85,10 @@ class Program
         logger.LogInformation("WordMD setup completed successfully");
         logger.LogInformation("Detected editors: {Editors}", string.Join(", ", editors));
 
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
-    private static async Task HandleEditorOrderAsync(ServiceProvider serviceProvider, string[] editorOrder)
+    private static Task HandleEditorOrderAsync(ServiceProvider serviceProvider, string[] editorOrder)
     {
         var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
         var editorConfig = serviceProvider.GetRequiredService<EditorConfiguration>();
@@ -109,10 +113,10 @@ class Program
 
         logger.LogInformation("Editor order updated: {EditorOrder}", string.Join(", ", orderList));
 
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
-    private static async Task HandleEditAsync(ServiceProvider serviceProvider, string docxPath, string? editorName)
+    private static Task HandleEditAsync(ServiceProvider serviceProvider, string docxPath, string? editorName)
     {
         var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
         var editorConfig = serviceProvider.GetRequiredService<EditorConfiguration>();
@@ -121,19 +125,19 @@ class Program
         {
             logger.LogError("File not found: {DocxPath}", docxPath);
             Environment.ExitCode = 1;
-            return;
+            return Task.CompletedTask;
         }
 
         // Determine which editor to use
         var editor = string.IsNullOrEmpty(editorName)
-            ? editorConfig.GetEditor(editorConfig.GetDefaultEditor())
-            : editorConfig.GetEditor(editorName);
+            ? EditorConfiguration.GetEditor(editorConfig.GetDefaultEditor())
+            : EditorConfiguration.GetEditor(editorName);
 
         if (editor == null)
         {
             logger.LogError("Editor not found: {EditorName}", editorName ?? "default");
             Environment.ExitCode = 1;
-            return;
+            return Task.CompletedTask;
         }
 
         logger.LogInformation("Editing {DocxPath} with {EditorName}", docxPath, editor.DisplayName);
@@ -148,7 +152,7 @@ class Program
 
         var launcher = new EditorLauncher(document, editor, converter, riderSettings, launcherLogger);
 
-        await launcher.LaunchAsync(docxPath);
+        return launcher.LaunchAsync(docxPath);
     }
 
     private static ServiceCollection ConfigureServices()

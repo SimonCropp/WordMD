@@ -8,7 +8,7 @@ public class EditorInfoTests
     public void AllEditors_ShouldContainExpectedEditors()
     {
         var editors = EditorInfo.AllEditors;
-        
+
         editors.Should().NotBeEmpty();
         editors.Should().Contain(e => e.Name == "vscode");
         editors.Should().Contain(e => e.Name == "rider");
@@ -20,7 +20,7 @@ public class EditorInfoTests
     public async Task VSCode_Properties_ShouldBeCorrect()
     {
         var vscode = EditorInfo.VSCode;
-        
+
         var properties = new
         {
             vscode.Name,
@@ -28,7 +28,7 @@ public class EditorInfoTests
             vscode.ExecutableName,
             vscode.CommandLineArgs
         };
-        
+
         await Verify(properties);
     }
 
@@ -36,7 +36,7 @@ public class EditorInfoTests
     public async Task Rider_Properties_ShouldBeCorrect()
     {
         var rider = EditorInfo.Rider;
-        
+
         var properties = new
         {
             rider.Name,
@@ -44,7 +44,7 @@ public class EditorInfoTests
             rider.ExecutableName,
             rider.CommandLineArgs
         };
-        
+
         await Verify(properties);
     }
 
@@ -52,11 +52,11 @@ public class EditorInfoTests
     public void GetExecutablePath_WithVSCode_ShouldReturnPath()
     {
         var vscode = EditorInfo.VSCode;
-        
+
         if (vscode.IsInstalled())
         {
             var path = vscode.GetExecutablePath();
-            
+
             path.Should().NotBeNull();
             File.Exists(path).Should().BeTrue();
         }

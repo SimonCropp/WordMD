@@ -39,12 +39,13 @@ public class EditorConfiguration
         }
     }
 
+    static JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions {WriteIndented = true};
     public void SetEditorOrder(List<string> editorOrder)
     {
         _logger.LogInformation("Saving editor order: {EditorOrder}", string.Join(", ", editorOrder));
 
         var config = new ConfigData {EditorOrder = editorOrder};
-        var json = JsonSerializer.Serialize(config, new JsonSerializerOptions {WriteIndented = true});
+        var json = JsonSerializer.Serialize(config, jsonSerializerOptions);
         File.WriteAllText(_configPath, json);
     }
 
@@ -76,10 +77,8 @@ public class EditorConfiguration
         return installed;
     }
 
-    public EditorInfo? GetEditor(string name)
-    {
-        return EditorInfo.AllEditors.FirstOrDefault(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-    }
+    public static EditorInfo? GetEditor(string name) =>
+        EditorInfo.AllEditors.FirstOrDefault(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
     private class ConfigData
     {

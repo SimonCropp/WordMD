@@ -1,0 +1,6 @@
+﻿{
+  Name: rider,
+  DisplayName: JetBrains Rider,
+  ExecutableName: rider64.exe,
+  CommandLineArgs: "{0}"
+}

@@ -115,8 +115,6 @@ public class WordMDDocument : IDisposable
         };
     }
 
-    public void Dispose()
-    {
+    public void Dispose() =>
         _document?.Dispose();
-    }
 }

@@ -8,10 +8,8 @@ public class EditorConfigurationTests
     private EditorConfiguration _config = null!;
 
     [SetUp]
-    public void Setup()
-    {
+    public void Setup() =>
         _config = new EditorConfiguration(NullLogger<EditorConfiguration>.Instance);
-    }
 
     [Test]
     public void DetectInstalledEditors_ShouldReturnAtLeastVSCode()
@@ -48,17 +46,17 @@ public class EditorConfigurationTests
     [Test]
     public void GetEditor_WithValidName_ShouldReturnEditor()
     {
-        var editor = _config.GetEditor("vscode");
+        var editor = EditorConfiguration.GetEditor("vscode");
 
         editor.Should().NotBeNull();
-        editor!.Name.Should().Be("vscode");
+        editor.Name.Should().Be("vscode");
         editor.DisplayName.Should().Be("Visual Studio Code");
     }
 
     [Test]
     public void GetEditor_WithInvalidName_ShouldReturnNull()
     {
-        var editor = _config.GetEditor("nonexistent");
+        var editor = EditorConfiguration.GetEditor("nonexistent");
 
         editor.Should().BeNull();
     }
