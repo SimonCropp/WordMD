@@ -30,7 +30,7 @@ public class EditorLauncher
             // Generate Rider settings if using Rider
             if (editor.Name.Equals("rider", StringComparison.OrdinalIgnoreCase))
             {
-                RiderSettingsGenerator.GenerateSettings(tempDirectory);
+                await RiderSettingsGenerator.GenerateSettings(tempDirectory);
             }
 
             // Find the markdown file
@@ -41,7 +41,7 @@ public class EditorLauncher
                 await File.CreateText(markdownFile).DisposeAsync();
             }
 
-            watcher = new FileChangeWatcher(
+            watcher = new(
                 tempDirectory,
                 () => OnFileChanged(docxPath, markdownFile));
 

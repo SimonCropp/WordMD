@@ -4,6 +4,7 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <RootNamespace>WordMD.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
