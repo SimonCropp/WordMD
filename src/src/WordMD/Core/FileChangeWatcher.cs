@@ -1,17 +1,18 @@
 using Microsoft.Extensions.Logging;
+using WordMD.Conversion;
 
 namespace WordMD.Core;
 
 public class FileChangeWatcher : IDisposable
 {
     private readonly string _directory;
-    private readonly ILogger<FileChangeWatcher> _logger;
+    private readonly ILogger<EditorLauncher> _logger;
     private readonly FileSystemWatcher _watcher;
     private readonly Action _onChangeCallback;
     private DateTime _lastChangeTime = DateTime.MinValue;
     private readonly TimeSpan _debounceInterval = TimeSpan.FromMilliseconds(500);
 
-    public FileChangeWatcher(string directory, Action onChangeCallback, ILogger<FileChangeWatcher> logger)
+    public FileChangeWatcher(string directory, Action onChangeCallback, ILogger<EditorLauncher> logger)
     {
         _directory = directory ?? throw new ArgumentNullException(nameof(directory));
         _onChangeCallback = onChangeCallback ?? throw new ArgumentNullException(nameof(onChangeCallback));
@@ -40,10 +41,10 @@ public class FileChangeWatcher : IDisposable
         {
             return;
         }
-        
+
         _lastChangeTime = now;
         _logger.LogInformation("File {ChangeType}: {FileName}", e.ChangeType, e.Name);
-        
+
         try
         {
             _onChangeCallback();
@@ -57,7 +58,7 @@ public class FileChangeWatcher : IDisposable
     private void OnFileRenamed(object sender, RenamedEventArgs e)
     {
         _logger.LogInformation("File renamed from {OldName} to {NewName}", e.OldName, e.Name);
-        
+
         try
         {
             _onChangeCallback();
@@ -76,7 +77,7 @@ public class FileChangeWatcher : IDisposable
         _watcher.Deleted -= OnFileChanged;
         _watcher.Renamed -= OnFileRenamed;
         _watcher.Dispose();
-        
+
         _logger.LogInformation("Stopped watching directory: {Directory}", _directory);
     }
 }

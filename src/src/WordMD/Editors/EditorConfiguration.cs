@@ -42,9 +42,9 @@ public class EditorConfiguration
     public void SetEditorOrder(List<string> editorOrder)
     {
         _logger.LogInformation("Saving editor order: {EditorOrder}", string.Join(", ", editorOrder));
-        
-        var config = new ConfigData { EditorOrder = editorOrder };
-        var json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
+
+        var config = new ConfigData {EditorOrder = editorOrder};
+        var json = JsonSerializer.Serialize(config, new JsonSerializerOptions {WriteIndented = true});
         File.WriteAllText(_configPath, json);
     }
 
@@ -57,7 +57,7 @@ public class EditorConfiguration
     public List<string> DetectInstalledEditors()
     {
         var installed = new List<string>();
-        
+
         foreach (var editor in EditorInfo.AllEditors)
         {
             if (editor.IsInstalled())
@@ -66,13 +66,13 @@ public class EditorConfiguration
                 _logger.LogInformation("Detected installed editor: {EditorName}", editor.DisplayName);
             }
         }
-        
+
         if (installed.Count == 0)
         {
             _logger.LogWarning("No markdown editors detected, using VSCode as default");
             installed.Add(EditorInfo.VSCode.Name);
         }
-        
+
         return installed;
     }
 

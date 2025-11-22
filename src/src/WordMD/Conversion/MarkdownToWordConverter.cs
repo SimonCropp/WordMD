@@ -24,26 +24,26 @@ public class MarkdownToWordConverter
     public void ConvertToWord(string markdownPath, string docxPath)
     {
         _logger.LogInformation("Converting {MarkdownPath} to {DocxPath}", markdownPath, docxPath);
-        
+
         var markdown = File.ReadAllText(markdownPath);
         var document = Markdown.Parse(markdown, _pipeline);
-        
+
         using var wordDocument = WordprocessingDocument.Open(docxPath, true);
         var body = wordDocument.MainDocumentPart!.Document.Body!;
-        
+
         // Clear existing content (except sections with embedded packages)
         var elementsToRemove = body.Elements<Paragraph>().ToList();
         foreach (var element in elementsToRemove)
         {
             element.Remove();
         }
-        
+
         // Convert markdown to Word elements
         foreach (var block in document)
         {
             ConvertBlock(block, body);
         }
-        
+
         wordDocument.MainDocumentPart.Document.Save();
         _logger.LogInformation("Conversion completed successfully");
     }
@@ -85,14 +85,14 @@ public class MarkdownToWordConverter
             5 => "Heading5",
             _ => "Heading6"
         };
-        
-        var props = new ParagraphProperties(new ParagraphStyleId { Val = style });
+
+        var props = new ParagraphProperties(new ParagraphStyleId {Val = style});
         paragraph.AppendChild(props);
-        
+
         var run = new Run();
         ConvertInlines(heading.Inline!, run);
         paragraph.AppendChild(run);
-        
+
         return paragraph;
     }
 
@@ -100,12 +100,12 @@ public class MarkdownToWordConverter
     {
         var paragraph = new Paragraph();
         var run = new Run();
-        
+
         if (paragraphBlock.Inline != null)
         {
             ConvertInlines(paragraphBlock.Inline, run);
         }
-        
+
         paragraph.AppendChild(run);
         return paragraph;
     }
@@ -117,12 +117,12 @@ public class MarkdownToWordConverter
             switch (child)
             {
                 case LiteralInline literal:
-                    run.AppendChild(new Text(literal.Content.ToString()) { Space = SpaceProcessingModeValues.Preserve });
+                    run.AppendChild(new Text(literal.Content.ToString()) {Space = SpaceProcessingModeValues.Preserve});
                     break;
                 case EmphasisInline emphasis:
                     var emphRun = new Run();
                     var emphProps = new RunProperties();
-                    
+
                     if (emphasis.DelimiterCount == 2)
                     {
                         emphProps.AppendChild(new Bold());
@@ -131,16 +131,16 @@ public class MarkdownToWordConverter
                     {
                         emphProps.AppendChild(new Italic());
                     }
-                    
+
                     emphRun.AppendChild(emphProps);
                     ConvertInlines(emphasis, emphRun);
                     run.Parent?.AppendChild(emphRun);
                     break;
                 case CodeInline code:
                     var codeRun = new Run();
-                    var codeProps = new RunProperties(new RunFonts { Ascii = "Courier New" });
+                    var codeProps = new RunProperties(new RunFonts {Ascii = "Courier New"});
                     codeRun.AppendChild(codeProps);
-                    codeRun.AppendChild(new Text(code.Content) { Space = SpaceProcessingModeValues.Preserve });
+                    codeRun.AppendChild(new Text(code.Content) {Space = SpaceProcessingModeValues.Preserve});
                     run.Parent?.AppendChild(codeRun);
                     break;
                 case LineBreakInline:
@@ -163,11 +163,11 @@ public class MarkdownToWordConverter
                 {
                     var listParagraph = CreateParagraph(paragraph);
                     var props = listParagraph.GetFirstChild<ParagraphProperties>() ?? new ParagraphProperties();
-                    
+
                     var numProps = new NumberingProperties(
-                        new NumberingLevelReference { Val = 0 },
-                        new NumberingId { Val = 1 });
-                    
+                        new NumberingLevelReference {Val = 0},
+                        new NumberingId {Val = 1});
+
                     props.AppendChild(numProps);
                     listParagraph.PrependChild(props);
                     body.AppendChild(listParagraph);
@@ -179,17 +179,17 @@ public class MarkdownToWordConverter
     private Paragraph CreateCodeBlock(CodeBlock code)
     {
         var paragraph = new Paragraph();
-        var props = new ParagraphProperties(new ParagraphStyleId { Val = "Code" });
+        var props = new ParagraphProperties(new ParagraphStyleId {Val = "Code"});
         paragraph.AppendChild(props);
-        
+
         var run = new Run();
-        var runProps = new RunProperties(new RunFonts { Ascii = "Courier New" });
+        var runProps = new RunProperties(new RunFonts {Ascii = "Courier New"});
         run.AppendChild(runProps);
-        
-        var text = code is FencedCodeBlock fenced ? fenced.Lines.ToString() : ((LeafBlock)code).Lines.ToString();
-        run.AppendChild(new Text(text) { Space = SpaceProcessingModeValues.Preserve });
+
+        var text = code is FencedCodeBlock fenced ? fenced.Lines.ToString() : code.Lines.ToString();
+        run.AppendChild(new Text(text) {Space = SpaceProcessingModeValues.Preserve});
         paragraph.AppendChild(run);
-        
+
         return paragraph;
     }
 

@@ -30,22 +30,22 @@ public class EditorLauncher
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task LaunchAsync(string docxPath, CancellationToken cancellationToken = default)
+    public async Task LaunchAsync(string docxPath, Cancel cancel = default)
     {
         try
         {
             _tempDirectory = Path.Combine(Path.GetTempPath(), "WordMD", Guid.NewGuid().ToString());
             _logger.LogInformation("Using temp directory: {TempDirectory}", _tempDirectory);
-            
+
             // Extract markdown and images
             _document.ExtractToDirectory(_tempDirectory);
-            
+
             // Generate Rider settings if using Rider
             if (_editor.Name.Equals("rider", StringComparison.OrdinalIgnoreCase))
             {
                 _riderSettings.GenerateSettings(_tempDirectory);
             }
-            
+
             // Find the markdown file
             var markdownFile = Directory.GetFiles(_tempDirectory, "*.md").FirstOrDefault();
             if (markdownFile == null)
@@ -53,16 +53,16 @@ public class EditorLauncher
                 _logger.LogError("No markdown file found in temp directory");
                 return;
             }
-            
+
             // Start file watcher
             var watcherLogger = _logger; // Could create a specific logger for the watcher
             _watcher = new FileChangeWatcher(
                 _tempDirectory,
                 () => OnFileChanged(docxPath, markdownFile),
                 watcherLogger);
-            
+
             // Launch editor
-            await LaunchEditorAsync(markdownFile, cancellationToken);
+            await LaunchEditorAsync(markdownFile, cancel);
         }
         finally
         {
@@ -70,7 +70,7 @@ public class EditorLauncher
         }
     }
 
-    private async Task LaunchEditorAsync(string markdownFile, CancellationToken cancellationToken)
+    private async Task LaunchEditorAsync(string markdownFile, Cancel cancel)
     {
         var executablePath = _editor.GetExecutablePath();
         if (executablePath == null || !File.Exists(executablePath))
@@ -78,10 +78,10 @@ public class EditorLauncher
             _logger.LogError("Editor executable not found: {EditorName}", _editor.DisplayName);
             return;
         }
-        
+
         var args = string.Format(_editor.CommandLineArgs, markdownFile);
         _logger.LogInformation("Launching {EditorName}: {Executable} {Args}", _editor.DisplayName, executablePath, args);
-        
+
         var startInfo = new ProcessStartInfo
         {
             FileName = executablePath,
@@ -89,16 +89,16 @@ public class EditorLauncher
             UseShellExecute = false,
             CreateNoWindow = false
         };
-        
+
         _editorProcess = Process.Start(startInfo);
         if (_editorProcess == null)
         {
             _logger.LogError("Failed to start editor process");
             return;
         }
-        
+
         _logger.LogInformation("Editor process started with PID: {ProcessId}", _editorProcess.Id);
-        
+
         // Wait for editor to exit
         await _editorProcess.WaitForExitAsync(cancellationToken);
         _logger.LogInformation("Editor process exited");
@@ -107,15 +107,15 @@ public class EditorLauncher
     private void OnFileChanged(string docxPath, string markdownFile)
     {
         _logger.LogInformation("File change detected, converting markdown to Word");
-        
+
         try
         {
             // Convert markdown to Word
             _converter.ConvertToWord(markdownFile, docxPath);
-            
+
             // Re-embed markdown and images
             _document.EmbedFromDirectory(_tempDirectory!);
-            
+
             _logger.LogInformation("Document updated successfully");
         }
         catch (Exception ex)
@@ -127,10 +127,10 @@ public class EditorLauncher
     private void Cleanup()
     {
         _logger.LogInformation("Cleaning up temp directory");
-        
+
         _watcher?.Dispose();
         _editorProcess?.Dispose();
-        
+
         if (_tempDirectory != null && Directory.Exists(_tempDirectory))
         {
             try

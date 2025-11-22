@@ -62,7 +62,7 @@ public record EditorInfo(
     private static string? FindInPath(string fileName)
     {
         var paths = Environment.GetEnvironmentVariable("PATH")?.Split(Path.PathSeparator) ?? [];
-        
+
         foreach (var path in paths)
         {
             try
@@ -78,7 +78,7 @@ public record EditorInfo(
                 // Ignore invalid paths
             }
         }
-        
+
         return null;
     }
 
@@ -90,7 +90,7 @@ public record EditorInfo(
         {
             return pathResult;
         }
-        
+
         // Try common installation locations
         return Name switch
         {
@@ -106,21 +106,21 @@ public record EditorInfo(
     {
         var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
         var riderDir = Path.Combine(programFiles, "JetBrains");
-        
+
         if (!Directory.Exists(riderDir))
         {
             return null;
         }
-        
+
         var versions = Directory.GetDirectories(riderDir, "JetBrains Rider*");
         if (versions.Length == 0)
         {
             return null;
         }
-        
+
         var latestVersion = versions.OrderByDescending(v => v).First();
         var exePath = Path.Combine(latestVersion, "bin", "rider64.exe");
-        
+
         return File.Exists(exePath) ? exePath : null;
     }
 }
