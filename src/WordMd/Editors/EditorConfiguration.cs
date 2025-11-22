@@ -1,6 +1,5 @@
 public static class EditorConfiguration
 {
-    const string ConfigFileName = "wordmd-config.json";
     static string configPath;
 
     static EditorConfiguration()
@@ -8,7 +7,7 @@ public static class EditorConfiguration
         var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         var wordmdPath = Path.Combine(appDataPath, "WordMD");
         Directory.CreateDirectory(wordmdPath);
-        configPath = Path.Combine(wordmdPath, ConfigFileName);
+        configPath = Path.Combine(wordmdPath, "wordmd-config.json");
     }
 
     public static List<string> GetEditorOrder()
