@@ -3,19 +3,13 @@ using Microsoft.Win32;
 public class RegistryManager
 {
     private const string ContextMenuPath = @"SOFTWARE\Classes\.docx\shell";
-    private readonly ILogger<RegistryManager> _logger;
 
-    public RegistryManager(ILogger<RegistryManager> logger) =>
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-    public void RegisterContextMenu(List<string> editorOrder)
+    public static void RegisterContextMenu(List<string> editorOrder)
     {
-        _logger.LogInformation("Registering context menu for WordMD");
+        Log.Information("Registering context menu for WordMD");
 
-        try
-        {
-            // Remove existing entries first
-            RemoveContextMenu();
+        // Remove existing entries first
+        RemoveContextMenu();
 
             // Get the path to wordmd.exe
             var wordmdPath = GetWordMDPath();
@@ -26,42 +20,29 @@ public class RegistryManager
             // Register "WordMD" with submenu
             RegisterSubmenu(wordmdPath, editorOrder);
 
-            _logger.LogInformation("Context menu registered successfully");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to register context menu");
-            throw;
-        }
+            Log.Information("Context menu registered successfully");
     }
 
-    public void RemoveContextMenu()
+    public static void RemoveContextMenu()
     {
-        _logger.LogInformation("Removing WordMD context menu entries");
+        Log.Information("Removing WordMD context menu entries");
 
-        try
+        using var key = Registry.CurrentUser.OpenSubKey(ContextMenuPath, true);
+        if (key == null)
         {
-            using var key = Registry.CurrentUser.OpenSubKey(ContextMenuPath, true);
-            if (key == null)
-            {
-                return;
-            }
-
-            // Remove WordMD Edit
-            key.DeleteSubKeyTree("WordMD Edit", false);
-
-            // Remove WordMD submenu
-            key.DeleteSubKeyTree("WordMD", false);
-
-            _logger.LogInformation("Context menu entries removed");
+            return;
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error removing context menu entries");
-        }
+
+        // Remove WordMD Edit
+        key.DeleteSubKeyTree("WordMD Edit", false);
+
+        // Remove WordMD submenu
+        key.DeleteSubKeyTree("WordMD", false);
+
+        Log.Information("Context menu entries removed");
     }
 
-    private static void RegisterDefaultEdit(string wordmdPath)
+    static void RegisterDefaultEdit(string wordmdPath)
     {
         using var key = Registry.CurrentUser.CreateSubKey($@"{ContextMenuPath}\WordMD Edit");
         key.SetValue("", "Edit with WordMD");
@@ -71,7 +52,7 @@ public class RegistryManager
         commandKey.SetValue("", $"\"{wordmdPath}\" \"%1\"");
     }
 
-    private static void RegisterSubmenu(string wordmdPath, List<string> editorOrder)
+    static void RegisterSubmenu(string wordmdPath, List<string> editorOrder)
     {
         using var key = Registry.CurrentUser.CreateSubKey($@"{ContextMenuPath}\WordMD");
         key.SetValue("", "Edit with WordMD...");
@@ -99,7 +80,7 @@ public class RegistryManager
         }
     }
 
-    private static string GetWordMDPath()
+    static string GetWordMDPath()
     {
         // Try to find wordmd in PATH
         var paths = Environment.GetEnvironmentVariable("PATH")?.Split(Path.PathSeparator) ?? [];

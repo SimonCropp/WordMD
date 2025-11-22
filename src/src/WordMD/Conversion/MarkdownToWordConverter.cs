@@ -6,20 +6,16 @@ using Markdig.Syntax.Inlines;
 
 public class MarkdownToWordConverter
 {
-    private readonly ILogger<MarkdownToWordConverter> _logger;
     private readonly MarkdownPipeline _pipeline;
 
-    public MarkdownToWordConverter(ILogger<MarkdownToWordConverter> logger)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    public MarkdownToWordConverter() =>
         _pipeline = new MarkdownPipelineBuilder()
             .UseAdvancedExtensions()
             .Build();
-    }
 
     public void ConvertToWord(string markdownPath, string docxPath)
     {
-        _logger.LogInformation("Converting {MarkdownPath} to {DocxPath}", markdownPath, docxPath);
+        Log.Information("Converting {MarkdownPath} to {DocxPath}", markdownPath, docxPath);
 
         var markdown = File.ReadAllText(markdownPath);
         var document = Markdown.Parse(markdown, _pipeline);
@@ -41,10 +37,10 @@ public class MarkdownToWordConverter
         }
 
         wordDocument.MainDocumentPart.Document.Save();
-        _logger.LogInformation("Conversion completed successfully");
+        Log.Information("Conversion completed successfully");
     }
 
-    private void ConvertBlock(Block block, Body body)
+    private static void ConvertBlock(Block block, Body body)
     {
         switch (block)
         {
@@ -64,12 +60,12 @@ public class MarkdownToWordConverter
                 body.AppendChild(CreateHorizontalRule());
                 break;
             default:
-                _logger.LogWarning("Unsupported block type: {BlockType}", block.GetType().Name);
+                Log.Warning("Unsupported block type: {BlockType}", block.GetType().Name);
                 break;
         }
     }
 
-    private Paragraph CreateHeading(HeadingBlock heading)
+    private static Paragraph CreateHeading(HeadingBlock heading)
     {
         var paragraph = new Paragraph();
         var style = heading.Level switch
@@ -92,7 +88,7 @@ public class MarkdownToWordConverter
         return paragraph;
     }
 
-    private Paragraph CreateParagraph(ParagraphBlock paragraphBlock)
+    private static Paragraph CreateParagraph(ParagraphBlock paragraphBlock)
     {
         var paragraph = new Paragraph();
         var run = new Run();
@@ -106,7 +102,7 @@ public class MarkdownToWordConverter
         return paragraph;
     }
 
-    private void ConvertInlines(Markdig.Syntax.Inlines.ContainerInline inline, Run run)
+    private static void ConvertInlines(ContainerInline inline, Run run)
     {
         foreach (var child in inline)
         {
@@ -143,13 +139,13 @@ public class MarkdownToWordConverter
                     run.AppendChild(new Break());
                     break;
                 default:
-                    _logger.LogWarning("Unsupported inline type: {InlineType}", child.GetType().Name);
+                    Log.Warning("Unsupported inline type: {InlineType}", child.GetType().Name);
                     break;
             }
         }
     }
 
-    private void ConvertList(ListBlock list, Body body)
+    static void ConvertList(ListBlock list, Body body)
     {
         foreach (var item in list.Cast<ListItemBlock>())
         {

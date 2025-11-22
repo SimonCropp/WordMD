@@ -1,58 +1,51 @@
-using System.Text.Json;
-
 public class EditorConfiguration
 {
     private const string ConfigFileName = "wordmd-config.json";
-    private readonly string _configPath;
-    private readonly ILogger<EditorConfiguration> _logger;
+    static  string configPath;
 
-    public EditorConfiguration(ILogger<EditorConfiguration> logger)
+    static EditorConfiguration()
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         var wordmdPath = Path.Combine(appDataPath, "WordMD");
         Directory.CreateDirectory(wordmdPath);
-        _configPath = Path.Combine(wordmdPath, ConfigFileName);
+        configPath = Path.Combine(wordmdPath, ConfigFileName);
     }
 
-    public List<string> GetEditorOrder()
+    public static List<string> GetEditorOrder()
     {
-        if (!File.Exists(_configPath))
+        if (!File.Exists(configPath))
         {
-            _logger.LogInformation("Config file not found, detecting installed editors");
+            Log.Information("Config file not found, detecting installed editors");
             return DetectInstalledEditors();
         }
 
-        try
-        {
-            var json = File.ReadAllText(_configPath);
-            var config = JsonSerializer.Deserialize<ConfigData>(json);
-            return config?.EditorOrder ?? DetectInstalledEditors();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error reading config file");
-            return DetectInstalledEditors();
-        }
+        var json = File.ReadAllText(configPath);
+        var config = JsonSerializer.Deserialize<ConfigData>(json);
+        return config?.EditorOrder ?? DetectInstalledEditors();
     }
 
-    static JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions {WriteIndented = true};
-    public void SetEditorOrder(List<string> editorOrder)
+    static JsonSerializerOptions jsonSerializerOptions =
+        new()
+        {
+            WriteIndented = true
+        };
+
+    public static void SetEditorOrder(List<string> editorOrder)
     {
-        _logger.LogInformation("Saving editor order: {EditorOrder}", string.Join(", ", editorOrder));
+        Log.Information("Saving editor order: {EditorOrder}", string.Join(", ", editorOrder));
 
         var config = new ConfigData {EditorOrder = editorOrder};
         var json = JsonSerializer.Serialize(config, jsonSerializerOptions);
-        File.WriteAllText(_configPath, json);
+        File.WriteAllText(configPath, json);
     }
 
-    public string GetDefaultEditor()
+    public static string GetDefaultEditor()
     {
         var order = GetEditorOrder();
         return order.FirstOrDefault() ?? EditorInfo.VSCode.Name;
     }
 
-    public List<string> DetectInstalledEditors()
+    public static List<string> DetectInstalledEditors()
     {
         var installed = new List<string>();
 
@@ -61,13 +54,13 @@ public class EditorConfiguration
             if (editor.IsInstalled())
             {
                 installed.Add(editor.Name);
-                _logger.LogInformation("Detected installed editor: {EditorName}", editor.DisplayName);
+                Log.Information("Detected installed editor: {EditorName}", editor.DisplayName);
             }
         }
 
         if (installed.Count == 0)
         {
-            _logger.LogWarning("No markdown editors detected, using VSCode as default");
+            Log.Warning("No markdown editors detected, using VSCode as default");
             installed.Add(EditorInfo.VSCode.Name);
         }
 

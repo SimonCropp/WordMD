@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Microsoft.Extensions.Logging.Abstractions;
 
 [TestFixture]
 public class FileChangeWatcherTests
@@ -28,8 +27,7 @@ public class FileChangeWatcherTests
         var changeDetected = false;
         using var watcher = new FileChangeWatcher(
             _testDirectory,
-            () => changeDetected = true,
-            NullLogger<EditorLauncher>.Instance);
+            () => changeDetected = true);
 
         // Create a file
         var testFile = Path.Combine(_testDirectory, "test.md");
@@ -50,8 +48,7 @@ public class FileChangeWatcherTests
         var changeCount = 0;
         using var watcher = new FileChangeWatcher(
             _testDirectory,
-            () => changeCount++,
-            NullLogger<EditorLauncher>.Instance);
+            () => changeCount++);
 
         // Wait for initialization
         await Task.Delay(500);
@@ -75,8 +72,7 @@ public class FileChangeWatcherTests
         var changeCount = 0;
         using var watcher = new FileChangeWatcher(
             _testDirectory,
-            () => changeCount++,
-            NullLogger<EditorLauncher>.Instance);
+            () => changeCount++);
 
         // Wait for initialization
         await Task.Delay(500);

@@ -1,13 +1,8 @@
 public class RiderSettingsGenerator
 {
-    private readonly ILogger<RiderSettingsGenerator> _logger;
-
-    public RiderSettingsGenerator(ILogger<RiderSettingsGenerator> logger) =>
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-    public void GenerateSettings(string directory)
+    public static void GenerateSettings(string directory)
     {
-        _logger.LogInformation("Generating Rider .DotSettings for {Directory}", directory);
+        Log.Information("Generating Rider .DotSettings for {Directory}", directory);
 
         var settingsPath = Path.Combine(directory, "Default.DotSettings");
         var settingsContent = """
@@ -20,6 +15,6 @@ public class RiderSettingsGenerator
                               """;
 
         File.WriteAllText(settingsPath, settingsContent);
-        _logger.LogInformation("Generated {SettingsPath}", settingsPath);
+        Log.Information("Generated {SettingsPath}", settingsPath);
     }
 }

@@ -1,17 +1,15 @@
 public class FileChangeWatcher : IDisposable
 {
-    private readonly string _directory;
-    private readonly ILogger<EditorLauncher> _logger;
-    private readonly FileSystemWatcher _watcher;
-    private readonly Action _onChangeCallback;
-    private DateTime _lastChangeTime = DateTime.MinValue;
-    private readonly TimeSpan _debounceInterval = TimeSpan.FromMilliseconds(500);
+    readonly string _directory;
+    readonly FileSystemWatcher _watcher;
+    readonly Action _onChangeCallback;
+    DateTime _lastChangeTime = DateTime.MinValue;
+    readonly TimeSpan _debounceInterval = TimeSpan.FromMilliseconds(500);
 
-    public FileChangeWatcher(string directory, Action onChangeCallback, ILogger<EditorLauncher> logger)
+    public FileChangeWatcher(string directory, Action onChangeCallback)
     {
         _directory = directory ?? throw new ArgumentNullException(nameof(directory));
         _onChangeCallback = onChangeCallback ?? throw new ArgumentNullException(nameof(onChangeCallback));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         _watcher = new FileSystemWatcher(_directory)
         {
@@ -25,10 +23,10 @@ public class FileChangeWatcher : IDisposable
         _watcher.Deleted += OnFileChanged;
         _watcher.Renamed += OnFileRenamed;
 
-        _logger.LogInformation("Started watching directory: {Directory}", _directory);
+        Log.Information("Started watching directory: {Directory}", _directory);
     }
 
-    private void OnFileChanged(object sender, FileSystemEventArgs e)
+    void OnFileChanged(object sender, FileSystemEventArgs e)
     {
         // Debounce rapid file changes
         var now = DateTime.Now;
@@ -38,30 +36,16 @@ public class FileChangeWatcher : IDisposable
         }
 
         _lastChangeTime = now;
-        _logger.LogInformation("File {ChangeType}: {FileName}", e.ChangeType, e.Name);
+        Log.Information("File {ChangeType}: {FileName}", e.ChangeType, e.Name);
 
-        try
-        {
-            _onChangeCallback();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in change callback");
-        }
+        _onChangeCallback();
     }
 
-    private void OnFileRenamed(object sender, RenamedEventArgs e)
+    void OnFileRenamed(object sender, RenamedEventArgs e)
     {
-        _logger.LogInformation("File renamed from {OldName} to {NewName}", e.OldName, e.Name);
+        Log.Information("File renamed from {OldName} to {NewName}", e.OldName, e.Name);
 
-        try
-        {
-            _onChangeCallback();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in change callback");
-        }
+        _onChangeCallback();
     }
 
     public void Dispose()
@@ -73,6 +57,6 @@ public class FileChangeWatcher : IDisposable
         _watcher.Renamed -= OnFileRenamed;
         _watcher.Dispose();
 
-        _logger.LogInformation("Stopped watching directory: {Directory}", _directory);
+        Log.Information("Stopped watching directory: {Directory}", _directory);
     }
 }

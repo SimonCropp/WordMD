@@ -1,19 +1,12 @@
 using FluentAssertions;
-using Microsoft.Extensions.Logging.Abstractions;
 
 [TestFixture]
 public class EditorConfigurationTests
 {
-    private EditorConfiguration _config = null!;
-
-    [SetUp]
-    public void Setup() =>
-        _config = new EditorConfiguration(NullLogger<EditorConfiguration>.Instance);
-
     [Test]
     public void DetectInstalledEditors_ShouldReturnAtLeastVSCode()
     {
-        var editors = _config.DetectInstalledEditors();
+        var editors = EditorConfiguration.DetectInstalledEditors();
 
         editors.Should().NotBeEmpty();
         editors.Should().Contain("vscode");
@@ -22,10 +15,10 @@ public class EditorConfigurationTests
     [Test]
     public void GetDefaultEditor_ShouldReturnFirstEditor()
     {
-        var editors = _config.DetectInstalledEditors();
-        _config.SetEditorOrder(editors);
+        var editors = EditorConfiguration.DetectInstalledEditors();
+        EditorConfiguration.SetEditorOrder(editors);
 
-        var defaultEditor = _config.GetDefaultEditor();
+        var defaultEditor = EditorConfiguration.GetDefaultEditor();
 
         defaultEditor.Should().Be(editors.First());
     }
@@ -35,9 +28,9 @@ public class EditorConfigurationTests
     {
         var order = new List<string> {"vscode", "rider", "notepad"};
 
-        _config.SetEditorOrder(order);
+        EditorConfiguration.SetEditorOrder(order);
 
-        var retrievedOrder = _config.GetEditorOrder();
+        var retrievedOrder = EditorConfiguration.GetEditorOrder();
 
         await Verify(retrievedOrder);
     }

@@ -1,18 +1,13 @@
-public class WordMDDocument : IDisposable
+public class WordMDDocument
 {
     string docPath;
-    ILogger<WordMDDocument> _logger;
-    WordprocessingDocument? document;
 
-    public WordMDDocument(string docxPath, ILogger<WordMDDocument> logger)
-    {
-        docPath = docxPath ?? throw new ArgumentNullException(nameof(docxPath));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    public WordMDDocument(string docxPath) =>
+        docPath = docxPath;
 
     public void ExtractToDirectory(string targetDirectory)
     {
-        _logger.LogInformation("Extracting markdown and images from {DocxPath} to {TargetDirectory}", docPath, targetDirectory);
+        Log.Information("Extracting markdown and images from {DocxPath} to {TargetDirectory}", docPath, targetDirectory);
 
         Directory.CreateDirectory(targetDirectory);
 
@@ -22,7 +17,7 @@ public class WordMDDocument : IDisposable
         foreach (var package in embeddedPackages)
         {
             var relationshipId = document.MainDocumentPart!.GetIdOfPart(package);
-            _logger.LogDebug("Processing embedded package: {RelationshipId}", relationshipId);
+            Log.Debug("Processing embedded package: {RelationshipId}", relationshipId);
 
             using var stream = package.GetStream();
             var fileName = GetFileName(package, relationshipId);
@@ -31,13 +26,13 @@ public class WordMDDocument : IDisposable
             using var fileStream = File.Create(targetPath);
             stream.CopyTo(fileStream);
 
-            _logger.LogDebug("Extracted {FileName} to {TargetPath}", fileName, targetPath);
+            Log.Debug("Extracted {FileName} to {TargetPath}", fileName, targetPath);
         }
     }
 
     public void EmbedFromDirectory(string sourceDirectory)
     {
-        _logger.LogInformation("Embedding markdown and images from {SourceDirectory} to {DocxPath}", sourceDirectory, docPath);
+        Log.Information("Embedding markdown and images from {SourceDirectory} to {DocxPath}", sourceDirectory, docPath);
 
         using var document = WordprocessingDocument.Open(docPath, true);
 
@@ -58,25 +53,25 @@ public class WordMDDocument : IDisposable
             using var packageStream = embeddedPackage.GetStream();
             fileStream.CopyTo(packageStream);
 
-            _logger.LogDebug("Embedded {FileName}", Path.GetFileName(file));
+            Log.Debug("Embedded {FileName}", Path.GetFileName(file));
         }
     }
 
     public void ApplyRestrictedEditing()
     {
-        _logger.LogInformation("Applying restricted editing to {DocxPath}", docPath);
+        Log.Information("Applying restricted editing to {DocxPath}", docPath);
 
         using var document = WordprocessingDocument.Open(docPath, true);
         var settings = document.MainDocumentPart?.DocumentSettingsPart;
 
         if (settings == null)
         {
-            settings = document.MainDocumentPart!.AddNewPart<DocumentSettingsPart>();
+            document.MainDocumentPart!.AddNewPart<DocumentSettingsPart>();
         }
 
         // Apply read-only restriction with password "WordMD"
         // This is a simplified implementation - full implementation would use OpenXML SDK properly
-        _logger.LogWarning("Restricted editing implementation requires proper OpenXML document protection");
+        Log.Warning("Restricted editing implementation requires proper OpenXML document protection");
     }
 
     static string GetFileName(EmbeddedPackagePart package, string relationshipId)
@@ -108,7 +103,4 @@ public class WordMDDocument : IDisposable
             _ => "application/octet-stream"
         };
     }
-
-    public void Dispose() =>
-        document?.Dispose();
 }
