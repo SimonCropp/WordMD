@@ -1,15 +1,9 @@
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Markdig;
-using Markdig.Syntax;
-using Markdig.Syntax.Inlines;
-
 public class MarkdownToWordConverter
 {
-    private readonly MarkdownPipeline _pipeline;
+    readonly MarkdownPipeline pipeline;
 
     public MarkdownToWordConverter() =>
-        _pipeline = new MarkdownPipelineBuilder()
+        pipeline = new MarkdownPipelineBuilder()
             .UseAdvancedExtensions()
             .Build();
 
@@ -18,7 +12,7 @@ public class MarkdownToWordConverter
         Log.Information("Converting {MarkdownPath} to {DocxPath}", markdownPath, docxPath);
 
         var markdown = File.ReadAllText(markdownPath);
-        var document = Markdown.Parse(markdown, _pipeline);
+        var document = Markdown.Parse(markdown, pipeline);
 
         using var wordDocument = WordprocessingDocument.Open(docxPath, true);
         var body = wordDocument.MainDocumentPart!.Document.Body!;
@@ -40,7 +34,7 @@ public class MarkdownToWordConverter
         Log.Information("Conversion completed successfully");
     }
 
-    private static void ConvertBlock(Block block, Body body)
+    static void ConvertBlock(Block block, Body body)
     {
         switch (block)
         {
@@ -65,7 +59,7 @@ public class MarkdownToWordConverter
         }
     }
 
-    private static Paragraph CreateHeading(HeadingBlock heading)
+    static Paragraph CreateHeading(HeadingBlock heading)
     {
         var paragraph = new Paragraph();
         var style = heading.Level switch
@@ -88,7 +82,7 @@ public class MarkdownToWordConverter
         return paragraph;
     }
 
-    private static Paragraph CreateParagraph(ParagraphBlock paragraphBlock)
+    static Paragraph CreateParagraph(ParagraphBlock paragraphBlock)
     {
         var paragraph = new Paragraph();
         var run = new Run();
@@ -102,7 +96,7 @@ public class MarkdownToWordConverter
         return paragraph;
     }
 
-    private static void ConvertInlines(ContainerInline inline, Run run)
+    static void ConvertInlines(ContainerInline inline, Run run)
     {
         foreach (var child in inline)
         {
@@ -168,7 +162,7 @@ public class MarkdownToWordConverter
         }
     }
 
-    private static Paragraph CreateCodeBlock(CodeBlock code)
+    static Paragraph CreateCodeBlock(CodeBlock code)
     {
         var paragraph = new Paragraph();
         var props = new ParagraphProperties(new ParagraphStyleId {Val = "Code"});
@@ -185,7 +179,7 @@ public class MarkdownToWordConverter
         return paragraph;
     }
 
-    private static Paragraph CreateHorizontalRule()
+    static Paragraph CreateHorizontalRule()
     {
         var paragraph = new Paragraph();
         var props = new ParagraphProperties(

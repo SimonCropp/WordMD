@@ -3,21 +3,21 @@ using FluentAssertions;
 [TestFixture]
 public class FileChangeWatcherTests
 {
-    private string _testDirectory = null!;
+    string testDirectory = null!;
 
     [SetUp]
     public void Setup()
     {
-        _testDirectory = Path.Combine(Path.GetTempPath(), "WordMD.Tests", Guid.NewGuid().ToString());
-        Directory.CreateDirectory(_testDirectory);
+        testDirectory = Path.Combine(Path.GetTempPath(), "WordMD.Tests", Guid.NewGuid().ToString());
+        Directory.CreateDirectory(testDirectory);
     }
 
     [TearDown]
     public void TearDown()
     {
-        if (Directory.Exists(_testDirectory))
+        if (Directory.Exists(testDirectory))
         {
-            Directory.Delete(_testDirectory, true);
+            Directory.Delete(testDirectory, true);
         }
     }
 
@@ -26,11 +26,11 @@ public class FileChangeWatcherTests
     {
         var changeDetected = false;
         using var watcher = new FileChangeWatcher(
-            _testDirectory,
+            testDirectory,
             () => changeDetected = true);
 
         // Create a file
-        var testFile = Path.Combine(_testDirectory, "test.md");
+        var testFile = Path.Combine(testDirectory, "test.md");
         await File.WriteAllTextAsync(testFile, "# Test");
 
         // Wait for the watcher to detect the change
@@ -42,12 +42,12 @@ public class FileChangeWatcherTests
     [Test]
     public async Task FileChangeWatcher_ShouldDetectFileModifications()
     {
-        var testFile = Path.Combine(_testDirectory, "test.md");
+        var testFile = Path.Combine(testDirectory, "test.md");
         await File.WriteAllTextAsync(testFile, "# Initial");
 
         var changeCount = 0;
         using var watcher = new FileChangeWatcher(
-            _testDirectory,
+            testDirectory,
             () => changeCount++);
 
         // Wait for initialization
@@ -66,12 +66,12 @@ public class FileChangeWatcherTests
     [Test]
     public async Task FileChangeWatcher_ShouldDebounceRapidChanges()
     {
-        var testFile = Path.Combine(_testDirectory, "test.md");
+        var testFile = Path.Combine(testDirectory, "test.md");
         await File.WriteAllTextAsync(testFile, "# Initial");
 
         var changeCount = 0;
         using var watcher = new FileChangeWatcher(
-            _testDirectory,
+            testDirectory,
             () => changeCount++);
 
         // Wait for initialization

@@ -57,7 +57,7 @@ public record EditorInfo(
         Obsidian
     ];
 
-    private static string? FindInPath(string fileName)
+    static string? FindInPath(string fileName)
     {
         var paths = Environment.GetEnvironmentVariable("PATH")?.Split(Path.PathSeparator) ?? [];
 
@@ -100,7 +100,7 @@ public record EditorInfo(
         };
     }
 
-    private static string? FindRiderPath()
+    static string? FindRiderPath()
     {
         var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
         var riderDir = Path.Combine(programFiles, "JetBrains");

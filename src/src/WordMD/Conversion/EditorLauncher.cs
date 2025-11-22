@@ -1,6 +1,6 @@
 public class EditorLauncher
 {
-    WordMDDocument document;
+    WordMdDocument document;
     EditorInfo editor;
     MarkdownToWordConverter converter;
     string? tempDirectory;
@@ -8,7 +8,7 @@ public class EditorLauncher
     FileChangeWatcher? watcher;
 
     public EditorLauncher(
-        WordMDDocument document,
+        WordMdDocument document,
         EditorInfo editor,
         MarkdownToWordConverter converter)
     {

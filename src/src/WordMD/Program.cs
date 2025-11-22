@@ -136,7 +136,7 @@ static class Program
         Log.Information("Editing {DocxPath} with {EditorName}", docxPath, editor.DisplayName);
 
         // Create instances for this edit session
-        var document = new WordMDDocument(docxPath);
+        var document = new WordMdDocument(docxPath);
 
         var converter = new MarkdownToWordConverter();
 

@@ -2,7 +2,7 @@ using Microsoft.Win32;
 
 public class RegistryManager
 {
-    private const string ContextMenuPath = @"SOFTWARE\Classes\.docx\shell";
+    const string ContextMenuPath = @"SOFTWARE\Classes\.docx\shell";
 
     public static void RegisterContextMenu(List<string> editorOrder)
     {

@@ -1,17 +1,12 @@
-public class WordMDDocument
+public class WordMdDocument(string docxPath)
 {
-    string docPath;
-
-    public WordMDDocument(string docxPath) =>
-        docPath = docxPath;
-
     public void ExtractToDirectory(string targetDirectory)
     {
-        Log.Information("Extracting markdown and images from {DocxPath} to {TargetDirectory}", docPath, targetDirectory);
+        Log.Information("Extracting markdown and images from {DocxPath} to {TargetDirectory}", docxPath, targetDirectory);
 
         Directory.CreateDirectory(targetDirectory);
 
-        using var document = WordprocessingDocument.Open(docPath, false);
+        using var document = WordprocessingDocument.Open(docxPath, false);
         var embeddedPackages = document.MainDocumentPart?.EmbeddedPackageParts ?? [];
 
         foreach (var package in embeddedPackages)
@@ -32,9 +27,9 @@ public class WordMDDocument
 
     public void EmbedFromDirectory(string sourceDirectory)
     {
-        Log.Information("Embedding markdown and images from {SourceDirectory} to {DocxPath}", sourceDirectory, docPath);
+        Log.Information("Embedding markdown and images from {SourceDirectory} to {DocxPath}", sourceDirectory, docxPath);
 
-        using var document = WordprocessingDocument.Open(docPath, true);
+        using var document = WordprocessingDocument.Open(docxPath, true);
 
         // Remove existing embedded packages
         var existingPackages = document.MainDocumentPart?.EmbeddedPackageParts.ToList() ?? [];
@@ -59,9 +54,9 @@ public class WordMDDocument
 
     public void ApplyRestrictedEditing()
     {
-        Log.Information("Applying restricted editing to {DocxPath}", docPath);
+        Log.Information("Applying restricted editing to {DocxPath}", docxPath);
 
-        using var document = WordprocessingDocument.Open(docPath, true);
+        using var document = WordprocessingDocument.Open(docxPath, true);
         var settings = document.MainDocumentPart?.DocumentSettingsPart;
 
         if (settings == null)
