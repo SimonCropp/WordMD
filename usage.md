@@ -1,197 +1,303 @@
 # WordMD Usage Examples
 
-## First Time Setup
+This guide provides detailed examples of how to use WordMD in different scenarios.
 
-1. Install WordMD globally:
-   ```bash
-   dotnet tool install -g WordMD
-   ```
+## Installation
 
-2. Run initial setup:
-   ```bash
-   wordmd
-   ```
-
-   Output:
-   ```
-   WordMD Setup
-   ============
-
-   Detecting installed markdown editors...
-   Found 3 editor(s):
-     - Visual Studio Code
-     - JetBrains Rider
-     - Notepad
-
-   Registering context menu entries...
-
-   Setup complete!
-
-   Right-click any .docx file to see the WordMD options:
-     - 'WordMD Edit' - Opens with default editor
-     - 'WordMD' submenu - Choose from available editors
-
-   Default editor: vscode
-   ```
-
-## Editing Documents
-
-### Via Context Menu
-
-1. Navigate to a `.docx` file in Windows Explorer
-2. Right-click the file
-3. Select either:
-   - **WordMD Edit** - Opens immediately with default editor
-   - **WordMD > [Editor Name]** - Choose specific editor
-
-### Via Command Line
-
-Open with default editor:
-```bash
-wordmd "C:\Documents\MyDocument.docx"
-```
-
-Open with specific editor:
-```bash
-wordmd "C:\Documents\MyDocument.docx" vscode
-wordmd "C:\Documents\MyDocument.docx" rider
-wordmd "C:\Documents\MyDocument.docx" typora
-```
-
-## Customizing Editor Order
-
-Change which editors appear first in the context menu:
+### Install as Global Tool
 
 ```bash
-wordmd --editor-order rider,vscode,typora
+dotnet tool install --global WordMD
 ```
 
-This makes Rider the default and orders the submenu accordingly.
+### Update to Latest Version
 
-## Workflow Example
-
-1. **Start Editing**
-   - Right-click `report.docx` → WordMD Edit
-   - VS Code opens with `document.md` from temp directory
-
-2. **Edit Content**
-   ```markdown
-   # Project Report
-   
-   ## Executive Summary
-   
-   This project achieved...
-   
-   ![Results Chart](images/chart.png)
-   ```
-
-3. **Auto-Save**
-   - Save in VS Code (Ctrl+S)
-   - WordMD detects change
-   - Converts markdown to Word format
-   - Updates `report.docx` automatically
-
-4. **Add Images**
-   - Copy image to `images/` folder in temp directory
-   - Reference in markdown: `![Alt](images/newimage.png)`
-   - Save - WordMD embeds the image in the docx
-
-5. **Finish**
-   - Close VS Code
-   - Temp files cleaned up automatically
-   - `report.docx` contains updated content + embedded markdown
-
-## Rider-Specific Features
-
-When using Rider, WordMD creates a `Default.DotSettings` file:
-
-```xml
-<wpf:ResourceDictionary ...>
-  <s:Boolean x:Key="/Default/Environment/AutoSave/@EntryValue">False</s:Boolean>
-</wpf:ResourceDictionary>
+```bash
+dotnet tool update --global WordMD
 ```
 
-This prevents Rider's auto-save from triggering unnecessary conversions.
+### Uninstall
 
-## Configuration File
-
-Location: `%USERPROFILE%\.wordmd\config.json`
-
-Example:
-```json
-{
-  "EditorOrder": [
-    "rider",
-    "vscode",
-    "typora"
-  ],
-  "DefaultEditor": "rider"
-}
+```bash
+dotnet tool uninstall --global WordMD
 ```
 
-Edit manually or use `--editor-order` to update.
+## Initial Setup
 
-## Troubleshooting
+After installation, run setup to detect editors and register context menu:
 
-### Editor Not Detected
-
-Run setup again to re-scan for editors:
 ```bash
 wordmd
 ```
 
-### Context Menu Not Appearing
-
-1. Ensure you have administrator privileges
-2. Re-run setup:
-   ```bash
-   wordmd
-   ```
-
-### Markdown Not Converting
-
-- Check that the document isn't open in Word
-- Ensure you have write permissions
-- Check console output for errors
-
-## Advanced Scenarios
-
-### Using Custom Markdown Syntax
-
-WordMD passes your markdown through DocSharp.Markdown, which supports:
-- Standard CommonMark
-- Tables
-- Task lists
-- Strikethrough
-- Embedded HTML (via Word Interop)
-
-### Multiple Image References
-
-```markdown
-# Document
-
-![Logo](images/logo.png)
-
-Content here...
-
-![Screenshot](images/screen1.png)
-![Screenshot](images/screen2.png)
+**Output:**
+```
+[INFO] Setting up WordMD...
+[INFO] Detected installed editor: Visual Studio Code
+[INFO] Detected installed editor: JetBrains Rider
+[INFO] WordMD setup completed successfully
+[INFO] Detected editors: vscode, rider
 ```
 
-All images in the `images/` folder are embedded in the docx.
+## Editing Documents
 
-### Working with Existing Documents
+### Example 1: Edit with Default Editor
 
-If you have an existing `.docx` without embedded markdown:
-1. Open with WordMD - it extracts empty markdown
-2. Write your markdown
-3. Save - WordMD replaces Word content with markdown-generated content
-4. Future edits use the embedded markdown as source
+```bash
+wordmd "C:\Documents\MyDocument.docx"
+```
 
-## Best Practices
+This will:
+1. Extract markdown and images to temp directory
+2. Open the markdown file in your default editor (first in editor order)
+3. Watch for changes in the temp directory
+4. Convert markdown to Word and update the .docx on save
+5. Clean up temp files when editor closes
 
-1. **Use meaningful filenames** for images
-2. **Don't edit the Word document directly** - use markdown instead
-3. **Commit both .docx and .md** if using version control
-4. **Use Rider** for complex markdown with multiple files
-5. **Test with simple documents** first
+### Example 2: Edit with Specific Editor
+
+```bash
+wordmd "C:\Documents\MyDocument.docx" rider
+```
+
+For Rider, this will also:
+- Create a `Default.DotSettings` file to disable auto-save
+- Prevent unwanted automatic saves
+
+### Example 3: Edit from Explorer
+
+Right-click on a .docx file:
+- Select **"WordMD Edit"** for default editor
+- Select **"WordMD"** → **"Visual Studio Code"** for specific editor
+
+## Configuration
+
+### Example 4: Set Editor Preference Order
+
+```bash
+wordmd --editor-order vscode,rider,typora,notepad
+```
+
+This sets your preferred editor order. The first editor in the list becomes the default.
+
+### Example 5: Prioritize Rider Over VSCode
+
+```bash
+wordmd --editor-order rider,vscode
+```
+
+Now Rider is the default, and "WordMD Edit" will use Rider.
+
+## Workflow Scenarios
+
+### Scenario 1: Documentation with Images
+
+1. Create a Word document
+2. Right-click → "WordMD Edit"
+3. Write markdown with image references:
+   ```markdown
+   # My Document
+   
+   ![Architecture Diagram](diagram.png)
+   ```
+4. Add `diagram.png` to the temp directory (shown in logs)
+5. Save the markdown file
+6. Images are automatically embedded in the Word document
+
+### Scenario 2: Team Collaboration
+
+1. Share a .docx file with embedded markdown
+2. Team members can edit with their preferred editor
+3. Markdown stays consistent across different editors
+4. Word formatting is regenerated from markdown
+
+### Scenario 3: Version Control Friendly
+
+```bash
+# Edit the document
+wordmd "Project.docx" vscode
+
+# Document is updated with markdown source
+# The embedded markdown can be extracted and versioned separately
+```
+
+## Advanced Usage
+
+### Custom Editor Detection
+
+If your editor isn't detected automatically, ensure it's in your PATH:
+
+```bash
+# Check if editor is in PATH
+where code      # Visual Studio Code
+where rider64   # JetBrains Rider
+```
+
+### Temp Directory Location
+
+WordMD uses `%TEMP%\WordMD\<guid>` for temporary files. Check logs for exact location:
+
+```
+[INFO] Using temp directory: C:\Users\Username\AppData\Local\Temp\WordMD\abc123...
+```
+
+### Configuration File Location
+
+Configuration is stored at:
+```
+%APPDATA%\WordMD\wordmd-config.json
+```
+
+Example content:
+```json
+{
+  "EditorOrder": [
+    "vscode",
+    "rider",
+    "notepad"
+  ]
+}
+```
+
+## Troubleshooting
+
+### Issue: Editor Doesn't Open
+
+**Solution:** Ensure the editor is installed and in PATH:
+```bash
+wordmd  # Re-run setup to detect editors
+```
+
+### Issue: Changes Not Saving to Word
+
+**Check:**
+1. Is the file watcher running? (check console logs)
+2. Is the temp directory still accessible?
+3. Do you have write permissions to the .docx file?
+
+### Issue: Context Menu Not Showing
+
+**Solution:** Re-run setup with administrator privileges:
+```bash
+# Run as administrator
+wordmd
+```
+
+### Issue: Rider Auto-Save Still Enabled
+
+The `.DotSettings` file should be in the temp directory. Check:
+```
+C:\Users\Username\AppData\Local\Temp\WordMD\<guid>\Default.DotSettings
+```
+
+## Tips and Best Practices
+
+### 1. Use Relative Image Paths
+
+```markdown
+![Logo](images/logo.png)
+```
+
+Place images in a subfolder for organization.
+
+### 2. Prefer Markdown Features
+
+Use markdown syntax over HTML when possible for better portability.
+
+### 3. Save Frequently
+
+Changes are detected on save, so save your markdown file to see updates in Word.
+
+### 4. Close Editor When Done
+
+Temp files are only cleaned up when the editor closes.
+
+### 5. Don't Edit Word Directly
+
+The document has restricted editing (password: "WordMD") to prevent conflicts.
+
+## Integration with Other Tools
+
+### VS Code Extensions
+
+Recommended extensions:
+- Markdown All in One
+- Markdown Preview Enhanced
+- markdownlint
+
+### Rider Plugins
+
+Recommended plugins:
+- Markdown Navigator
+- Markdown Editor
+
+### Git Integration
+
+```bash
+# Extract markdown for versioning
+wordmd "document.docx" vscode
+# Markdown is in temp directory - copy it to version control
+```
+
+## Markdown Features Supported
+
+WordMD supports standard markdown plus:
+
+- **Headings** (H1-H6)
+- **Bold** and *italic*
+- Lists (ordered and unordered)
+- Code blocks with syntax highlighting
+- Inline code
+- Links
+- Images
+- Horizontal rules
+- Tables (via Markdig extensions)
+- Task lists
+- Strikethrough
+
+## Example Markdown
+
+```markdown
+# Document Title
+
+## Introduction
+
+This is a **bold** statement and this is *italic*.
+
+### Features
+
+- Feature 1
+- Feature 2
+  - Sub-feature 2.1
+  - Sub-feature 2.2
+
+### Code Example
+
+Here's some `inline code`.
+
+```csharp
+public class Example
+{
+    public void Method()
+    {
+        Console.WriteLine("Hello, WordMD!");
+    }
+}
+```
+
+### Image
+
+![Diagram](architecture.png)
+
+---
+
+## Conclusion
+
+For more information, visit [the docs](https://example.com).
+```
+
+## Support
+
+For issues, questions, or feature requests:
+- GitHub Issues: https://github.com/wordmd/wordmd/issues
+- Discussions: https://github.com/wordmd/wordmd/discussions

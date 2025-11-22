@@ -1,179 +1,160 @@
 # WordMD
 
-Edit markdown documents embedded within Word files (.docx) with your favorite markdown editor.
+A tool for editing markdown documents embedded in Word (.docx) files.
 
 ## Overview
 
-WordMD allows you to:
-- Embed markdown content and images within Word documents as a hidden ZIP archive
-- Edit the embedded markdown using your preferred editor (VS Code, Rider, Typora, etc.)
-- Automatically convert markdown back to Word format on save
-- Protect Word documents with restricted editing to prevent accidental modifications
+WordMD allows you to maintain markdown content within Word documents. The markdown and associated images are stored as embedded packages within the .docx file, and can be edited using your favorite markdown editor.
 
-## How It Works
+## Features
 
-A `.docx` file is actually a ZIP archive. WordMD leverages this by:
-1. Storing the markdown source and images in a `wordmd/` directory within the ZIP
-2. Extracting these files to a temporary directory when editing
-3. Watching for changes and automatically converting markdown to Word
-4. Re-embedding the updated markdown and images back into the `.docx`
+- **Embedded Markdown**: Store markdown documents and images inside Word files as EmbeddedPackageParts
+- **Right-click Context Menu**: Edit .docx files directly from Windows Explorer
+- **Multiple Editor Support**: Works with VSCode, Rider, Notepad++, Typora, Markdown Monster, and Obsidian
+- **Background Processing**: Automatically converts markdown to Word format on save
+- **File Watching**: Detects changes to markdown and images in real-time
+- **Restricted Editing**: Prevents direct editing of Word content (password: "WordMD")
+- **Rider Integration**: Disables auto-save for seamless editing experience
 
 ## Installation
 
-Install WordMD as a global .NET tool:
+Install as a .NET global tool:
 
 ```bash
-dotnet tool install -g WordMD
+dotnet tool install --global WordMD
 ```
 
-## Initial Setup
+## Setup
 
-Run WordMD without arguments to set up Windows Explorer context menu integration:
+Run the setup command to detect installed editors and register context menu:
 
 ```bash
 wordmd
 ```
 
 This will:
-- Detect installed markdown editors on your system
-- Register context menu entries for `.docx` files
-- Create a configuration file in `~/.wordmd/config.json`
-
-### Supported Editors
-
-- Visual Studio Code
-- JetBrains Rider
-- Typora
-- Markdown Monster
-- Obsidian
-- Notepad (fallback)
+- Detect installed markdown editors
+- Register Windows Explorer context menu items
+- Create configuration file in `%APPDATA%\WordMD`
 
 ## Usage
 
-### Context Menu
+### From Windows Explorer
 
-After setup, right-click any `.docx` file to see:
+Right-click on a .docx file and select:
+- **WordMD Edit** - Opens in your default markdown editor
+- **WordMD** → [Editor Name] - Opens in a specific editor
 
-- **WordMD Edit** - Opens with your default editor
-- **WordMD** - Submenu with all available editors
+### From Command Line
 
-### Command Line
-
-Edit a document with the default editor:
-
+Edit with default editor:
 ```bash
-wordmd "path/to/document.docx"
+wordmd "C:\path\to\document.docx"
 ```
 
-Edit with a specific editor:
-
+Edit with specific editor:
 ```bash
-wordmd "path/to/document.docx" vscode
-wordmd "path/to/document.docx" rider
+wordmd "C:\path\to\document.docx" vscode
 ```
 
-### Configure Editor Order
-
-Customize the order of editors in the context menu:
-
+Configure editor order:
 ```bash
-wordmd --editor-order vscode,rider,typora
+wordmd --editor-order vscode,rider,notepad
 ```
 
-Editors not in the list will appear after the specified ones in their default order.
+## Supported Editors
 
-## Features
+- **Visual Studio Code** (`vscode`)
+- **JetBrains Rider** (`rider`)
+- **Notepad++** (`notepad`)
+- **Typora** (`typora`)
+- **Markdown Monster** (`markdownmonster`)
+- **Obsidian** (`obsidian`)
 
-### Rider Integration
+## How It Works
 
-When editing with Rider, WordMD creates a `Default.DotSettings` file that disables auto-save for the temporary directory, preventing unnecessary file change events.
+1. **Extraction**: When you open a .docx file for editing, WordMD extracts the embedded markdown and images to a temporary directory
+2. **Editing**: Your chosen markdown editor opens the extracted markdown file
+3. **Watching**: A background process monitors the temporary directory for changes
+4. **Conversion**: On save, the markdown is converted to Word format using Markdig
+5. **Embedding**: The updated markdown and images are re-embedded in the .docx file
+6. **Cleanup**: When you close the editor, temporary files are cleaned up
 
-### Document Protection
+## Architecture
 
-WordMD applies restricted editing to the Word document with the password `WordMD` to prevent accidental modifications to the generated content.
+The solution consists of two projects:
 
-### File Watching
+- **WordMD**: Main application containing all functionality (dotnet tool)
+  - Core: Document handling and file watching
+  - Editors: Editor detection, configuration, and registry management
+  - Conversion: Markdown to Word conversion and Rider settings generation
+- **WordMD.Tests**: NUnit tests with Verify snapshot testing
 
-Changes to the markdown file and images are automatically detected and converted back to Word format, keeping the document in sync with your edits.
+**Solution Format:** Uses modern .slnx format (7 lines of clean XML). See [SLNX_FORMAT.md](SLNX_FORMAT.md) for details.
 
-### HTML Embedding
+## Technologies
 
-For HTML content within markdown, WordMD uses Word Interop to properly embed the HTML into the Word document.
+- **.NET 10** with C# 14
+- **DocumentFormat.OpenXml**: For Word document manipulation
+- **Markdig**: Markdown parsing and processing
+- **System.CommandLine**: Command-line argument parsing (stable 2.0)
+- **NUnit** with **Verify**: Testing framework with snapshot testing
 
-## Building from Source
+## Modern Solution Format
 
-```bash
-# Restore and build
-dotnet restore
-dotnet build
+This solution uses the new **.slnx format** (XML-based solution file) introduced in Visual Studio 2022 17.10. This provides:
 
-# Run tests
-dotnet test
+- Clean, human-readable XML structure
+- Better merge conflict resolution
+- Simpler version control diffs
+- No GUID management required
 
-# Pack as a tool
-dotnet pack -c Release
-
-# Install locally
-dotnet tool install -g --add-source ./src/WordMD.Cli/bin/Release WordMD
-```
-
-## Testing
-
-The solution includes comprehensive tests using NUnit and Verify:
-
-```bash
-# Run all tests
-dotnet test
-
-# Run with detailed output
-dotnet test --verbosity normal
-
-# Run specific test class
-dotnet test --filter "FullyQualifiedName~EditorDefinitionsTests"
-```
-
-See [tests/WordMD.Tests/README.md](tests/WordMD.Tests/README.md) for more details on the testing approach.
-
-## Requirements
-
-- .NET 10.0 or later
-- Windows (for registry-based context menu integration)
-- At least one supported markdown editor installed
+Compatible with Visual Studio 2022 17.10+, JetBrains Rider 2023.3+, and all `dotnet` CLI commands.
 
 ## Configuration
 
-Configuration is stored in `~/.wordmd/config.json`:
+Configuration is stored in `%APPDATA%\WordMD\wordmd-config.json`:
 
 ```json
 {
-  "EditorOrder": ["vscode", "rider", "typora"],
-  "DefaultEditor": "vscode"
+  "EditorOrder": [
+    "vscode",
+    "rider",
+    "notepad"
+  ]
 }
 ```
 
-## Technical Details
+## Development
 
-### Archive Structure
+### Requirements
 
-Within the `.docx` ZIP archive:
+- .NET 10 SDK
+- Windows OS (for registry integration)
+- JetBrains Rider or Visual Studio 2022 17.10+ (for .slnx support)
 
-```
-document.docx
-├── word/
-│   └── ... (standard Word XML files)
-└── wordmd/
-    ├── document.md
-    └── images/
-        ├── image1.png
-        └── image2.jpg
+### Building
+
+```bash
+dotnet build
 ```
 
-### Conversion
+### Testing
 
-Markdown is converted to Word using:
-- **DocSharp.Markdown** for standard markdown elements
-- **Word Interop** for embedded HTML content
+```bash
+dotnet test
+```
+
+### Packaging
+
+```bash
+dotnet pack
+```
 
 ## License
 
-MIT
+MIT License
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
