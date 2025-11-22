@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Verify.NUnit" />
     <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
-    <ProjectReference Include="..\..\src\WordMD\WordMD.csproj" />
+    <ProjectReference Include="..\WordMd\WordMd.csproj" />
     <Using Include="NUnit.Framework.Legacy.ClassicAssert" Static="True" />
     <Using Include="NUnit.Framework.Assert" Static="True" />
   </ItemGroup>

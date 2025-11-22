@@ -8,6 +8,7 @@ static class Logging
         Directory.CreateDirectory(LogsDirectory);
         var configuration = new LoggerConfiguration();
         configuration.MinimumLevel.Debug();
+        configuration.WriteTo.Console();
         configuration.WriteTo.File(
             Path.Combine(LogsDirectory, "log.txt"),
             rollOnFileSizeLimit: true,

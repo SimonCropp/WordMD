@@ -6,8 +6,8 @@
     <File Path="Directory.Packages.props" />
     <File Path="global.json" />
   </Folder>
-  <Project Path="src\WordMD\WordMD.csproj" />
-  <Project Path="tests/Tests/Tests.csproj" />
+  <Project Path="WordMd\WordMd.csproj" />
+  <Project Path="Tests/Tests.csproj" />
   <Properties Name="Visual Studio">
     <Property Name="OpenWith" Value="Visual Studio Version 17" />
   </Properties>
