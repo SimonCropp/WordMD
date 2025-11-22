@@ -1,7 +1,0 @@
-﻿{
-  ImageNames: [
-    another.jpg,
-    test.png
-  ],
-  ImageCount: 2
-}

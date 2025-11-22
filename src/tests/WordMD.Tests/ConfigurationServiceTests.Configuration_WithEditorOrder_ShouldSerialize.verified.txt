@@ -1,8 +1,0 @@
-﻿{
-  "EditorOrder": [
-    "vscode",
-    "rider",
-    "typora"
-  ],
-  "DefaultEditor": "vscode"
-}
