@@ -1,4 +1,4 @@
-public class EditorConfiguration
+public static class EditorConfiguration
 {
     const string ConfigFileName = "wordmd-config.json";
     static string configPath;
@@ -70,10 +70,10 @@ public class EditorConfiguration
     }
 
     public static EditorInfo? GetEditor(string name) =>
-        EditorInfo.AllEditors.FirstOrDefault(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        EditorInfo.AllEditors.FirstOrDefault(_ => _.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
     class ConfigData
     {
-        public List<string> EditorOrder { get; set; } = [];
+        public List<string> EditorOrder { get; init; } = [];
     }
 }
