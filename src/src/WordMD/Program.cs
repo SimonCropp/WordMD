@@ -1,4 +1,5 @@
 using System.CommandLine;
+using System.CommandLine.Invocation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using WordMD.Conversion;
@@ -18,31 +19,35 @@ class Program
 
         // Add --editor-order option
         var editorOrderOption = new Option<string[]>(
-            ["--editor-order"],
+            "--editor-order",
             "Specify the order of markdown editors (comma-separated)")
         {
-            AllowMultipleArgumentsPerToken = true
+            AllowMultipleArgumentsPerToken = true,
+            Arity = ArgumentArity.ZeroOrMore
         };
         rootCommand.AddOption(editorOrderOption);
 
         // Add docx path argument (optional)
-        var docxPathArgument = new Argument<string?>(
-            "docx-path",
-            () => null,
-            "Path to the .docx file to edit");
+        var docxPathArgument = new Argument<string?>("docx-path")
+        {
+            Description = "Path to the .docx file to edit",
+            Arity = ArgumentArity.ZeroOrOne
+        };
         rootCommand.AddArgument(docxPathArgument);
 
         // Add editor name argument (optional)
-        var editorNameArgument = new Argument<string?>(
-            "editor-name",
-            () => null,
-            "Name of the editor to use");
+        var editorNameArgument = new Argument<string?>("editor-name")
+        {
+            Description = "Name of the editor to use",
+            Arity = ArgumentArity.ZeroOrOne
+        };
         rootCommand.AddArgument(editorNameArgument);
 
+        // Use the stable 2.0 handler pattern (SetHandler extension)
         rootCommand.SetHandler(async (string? docxPath, string? editorName, string[]? editorOrder) =>
         {
             var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
-            
+
             try
             {
                 // Handle --editor-order
@@ -89,7 +94,7 @@ class Program
 
         logger.LogInformation("WordMD setup completed successfully");
         logger.LogInformation("Detected editors: {Editors}", string.Join(", ", editors));
-        
+
         await Task.CompletedTask;
     }
 
@@ -102,7 +107,7 @@ class Program
         logger.LogInformation("Updating editor order...");
 
         var orderList = editorOrder.ToList();
-        
+
         // Add any missing editors that were detected but not in the list
         var detected = editorConfig.DetectInstalledEditors();
         foreach (var editor in detected)
@@ -117,7 +122,7 @@ class Program
         registryManager.RegisterContextMenu(orderList);
 
         logger.LogInformation("Editor order updated: {EditorOrder}", string.Join(", ", orderList));
-        
+
         await Task.CompletedTask;
     }
 
@@ -150,13 +155,13 @@ class Program
         // Create instances for this edit session
         var documentLogger = serviceProvider.GetRequiredService<ILogger<WordMDDocument>>();
         var document = new WordMDDocument(docxPath, documentLogger);
-        
+
         var converter = serviceProvider.GetRequiredService<MarkdownToWordConverter>();
         var riderSettings = serviceProvider.GetRequiredService<RiderSettingsGenerator>();
         var launcherLogger = serviceProvider.GetRequiredService<ILogger<EditorLauncher>>();
-        
+
         var launcher = new EditorLauncher(document, editor, converter, riderSettings, launcherLogger);
-        
+
         await launcher.LaunchAsync(docxPath);
     }
 
