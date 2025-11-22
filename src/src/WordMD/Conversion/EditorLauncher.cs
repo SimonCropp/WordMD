@@ -100,7 +100,7 @@ public class EditorLauncher
         _logger.LogInformation("Editor process started with PID: {ProcessId}", _editorProcess.Id);
 
         // Wait for editor to exit
-        await _editorProcess.WaitForExitAsync(cancellationToken);
+        await _editorProcess.WaitForExitAsync(cancel);
         _logger.LogInformation("Editor process exited");
     }
 

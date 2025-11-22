@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
+using WordMD.Conversion;
 using WordMD.Core;
 
 [TestFixture]
@@ -30,7 +31,7 @@ public class FileChangeWatcherTests
         using var watcher = new FileChangeWatcher(
             _testDirectory,
             () => changeDetected = true,
-            NullLogger<FileChangeWatcher>.Instance);
+            NullLogger<EditorLauncher>.Instance);
 
         // Create a file
         var testFile = Path.Combine(_testDirectory, "test.md");
@@ -52,7 +53,7 @@ public class FileChangeWatcherTests
         using var watcher = new FileChangeWatcher(
             _testDirectory,
             () => changeCount++,
-            NullLogger<FileChangeWatcher>.Instance);
+            NullLogger<EditorLauncher>.Instance);
 
         // Wait for initialization
         await Task.Delay(500);
@@ -77,7 +78,7 @@ public class FileChangeWatcherTests
         using var watcher = new FileChangeWatcher(
             _testDirectory,
             () => changeCount++,
-            NullLogger<FileChangeWatcher>.Instance);
+            NullLogger<EditorLauncher>.Instance);
 
         // Wait for initialization
         await Task.Delay(500);

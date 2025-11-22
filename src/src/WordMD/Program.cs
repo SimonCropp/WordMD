@@ -1,5 +1,4 @@
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using WordMD.Conversion;
@@ -9,72 +8,59 @@ using WordMD.Editors;
 namespace WordMD;
 
 class Program
-{
-    static async Task<int> Main(string[] args)
+{ static async Task<int> Main(string[] args)
     {
         var services = ConfigureServices();
         var serviceProvider = services.BuildServiceProvider();
-
-        var rootCommand = new RootCommand("WordMD - Edit markdown documents embedded in Word files");
-
-        // Add --editor-order option
-        var editorOrderOption = new Option<string[]>(
-            "--editor-order",
-            "Specify the order of markdown editors (comma-separated)")
+        // Configure setup command (no arguments = setup)
+        var editorOrderOption = new Option<string[]>("--editor-order")
         {
-            AllowMultipleArgumentsPerToken = true,
-            Arity = ArgumentArity.ZeroOrMore
+            Description = "Comma-separated list of editor names to specify order",
+            AllowMultipleArgumentsPerToken = true
         };
-        rootCommand.AddOption(editorOrderOption);
 
-        // Add docx path argument (optional)
+        // Add positional arguments for edit mode
         var docxPathArgument = new Argument<string?>("docx-path")
         {
-            Description = "Path to the .docx file to edit",
-            Arity = ArgumentArity.ZeroOrOne
+            Description = "Path to the .docx file to edit"
         };
-        rootCommand.AddArgument(docxPathArgument);
 
-        // Add editor name argument (optional)
         var editorNameArgument = new Argument<string?>("editor-name")
         {
-            Description = "Name of the editor to use",
-            Arity = ArgumentArity.ZeroOrOne
+            Description = "Name of the editor to use"
         };
-        rootCommand.AddArgument(editorNameArgument);
 
-        // Use the stable 2.0 handler pattern (SetHandler extension)
-        rootCommand.SetHandler(async (string? docxPath, string? editorName, string[]? editorOrder) =>
+        var rootCommand = new RootCommand("WordMD - Edit markdown documents within Word files")
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
-
-            try
+            editorOrderOption,
+            docxPathArgument,
+            editorNameArgument
+        };
+        rootCommand.SetAction(async result =>
+        {
+            var docxPath = result.GetValue(docxPathArgument);
+            var editorName = result.GetValue(editorNameArgument);
+            var editorOrder = result.GetValue(editorOrderOption);
+            // Determine mode based on arguments
+            if (docxPath is null && editorOrder?.Length == 0)
             {
-                // Handle --editor-order
-                if (editorOrder != null && editorOrder.Length > 0)
-                {
-                    await HandleEditorOrderAsync(serviceProvider, editorOrder);
-                    return;
-                }
-
-                // Handle setup (no arguments)
-                if (string.IsNullOrEmpty(docxPath))
-                {
-                    await HandleSetupAsync(serviceProvider);
-                    return;
-                }
-
-                // Handle edit
+                // Setup mode
+                await HandleSetupAsync(serviceProvider);
+            }
+            else if (docxPath is not null)
+            {
+                // Edit mode
                 await HandleEditAsync(serviceProvider, docxPath, editorName);
             }
-            catch (Exception ex)
+            else if (editorOrder?.Length > 0)
             {
-                logger.LogError(ex, "Unhandled exception");
-                Environment.ExitCode = 1;
+                // Update editor order
+                await HandleEditorOrderAsync(serviceProvider, editorOrder);
             }
-        }, docxPathArgument, editorNameArgument, editorOrderOption);
+        });
 
-        return await rootCommand.InvokeAsync(args);
+        var parseResult = rootCommand.Parse(args);
+        return await parseResult.InvokeAsync();
     }
 
     private static async Task HandleSetupAsync(ServiceProvider serviceProvider)

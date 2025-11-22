@@ -17,7 +17,7 @@ public class EditorConfigurationTests
     public void DetectInstalledEditors_ShouldReturnAtLeastVSCode()
     {
         var editors = _config.DetectInstalledEditors();
-        
+
         editors.Should().NotBeEmpty();
         editors.Should().Contain("vscode");
     }
@@ -27,21 +27,21 @@ public class EditorConfigurationTests
     {
         var editors = _config.DetectInstalledEditors();
         _config.SetEditorOrder(editors);
-        
+
         var defaultEditor = _config.GetDefaultEditor();
-        
+
         defaultEditor.Should().Be(editors.First());
     }
 
     [Test]
     public async Task SetEditorOrder_ShouldPersistToConfig()
     {
-        var order = new List<string> { "vscode", "rider", "notepad" };
-        
+        var order = new List<string> {"vscode", "rider", "notepad"};
+
         _config.SetEditorOrder(order);
-        
+
         var retrievedOrder = _config.GetEditorOrder();
-        
+
         await Verify(retrievedOrder);
     }
 
@@ -49,7 +49,7 @@ public class EditorConfigurationTests
     public void GetEditor_WithValidName_ShouldReturnEditor()
     {
         var editor = _config.GetEditor("vscode");
-        
+
         editor.Should().NotBeNull();
         editor!.Name.Should().Be("vscode");
         editor.DisplayName.Should().Be("Visual Studio Code");
@@ -59,7 +59,7 @@ public class EditorConfigurationTests
     public void GetEditor_WithInvalidName_ShouldReturnNull()
     {
         var editor = _config.GetEditor("nonexistent");
-        
+
         editor.Should().BeNull();
     }
 }
