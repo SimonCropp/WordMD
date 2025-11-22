@@ -1,9 +1,20 @@
-using System.CommandLine;
-using Microsoft.Extensions.DependencyInjection;
-
 class Program
 {
-    static Task<int> Main(string[] args)
+    static async Task<int> Main(string[] args)
+    {
+        Logging.Init();
+        try
+        {
+            return await Inner(args);
+        }
+        catch (Exception exception)
+        {
+            Log.Logger.Fatal(exception, "Failed at startup");
+            throw;
+        }
+    }
+
+    static Task<int> Inner(string[] args)
     {
         var services = ConfigureServices();
         var serviceProvider = services.BuildServiceProvider();
