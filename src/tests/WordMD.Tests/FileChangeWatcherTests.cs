@@ -1,7 +1,5 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
-using WordMD.Conversion;
-using WordMD.Core;
 
 [TestFixture]
 public class FileChangeWatcherTests

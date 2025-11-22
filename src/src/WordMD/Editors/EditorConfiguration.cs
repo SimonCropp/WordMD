@@ -1,7 +1,4 @@
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
-
-namespace WordMD.Editors;
 
 public class EditorConfiguration
 {

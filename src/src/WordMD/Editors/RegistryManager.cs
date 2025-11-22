@@ -1,7 +1,4 @@
-using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
-
-namespace WordMD.Editors;
 
 public class RegistryManager
 {

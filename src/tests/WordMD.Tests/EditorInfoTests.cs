@@ -1,5 +1,4 @@
 using FluentAssertions;
-using WordMD.Editors;
 
 [TestFixture]
 public class EditorInfoTests

@@ -1,5 +1,3 @@
-namespace WordMD.Editors;
-
 public record EditorInfo(
     string Name,
     string DisplayName,

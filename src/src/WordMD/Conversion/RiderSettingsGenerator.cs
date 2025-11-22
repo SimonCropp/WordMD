@@ -1,7 +1,3 @@
-using Microsoft.Extensions.Logging;
-
-namespace WordMD.Conversion;
-
 public class RiderSettingsGenerator
 {
     private readonly ILogger<RiderSettingsGenerator> _logger;

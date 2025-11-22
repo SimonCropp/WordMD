@@ -1,12 +1,8 @@
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
-using Microsoft.Extensions.Logging;
-
-namespace WordMD.Conversion;
 
 public class MarkdownToWordConverter
 {

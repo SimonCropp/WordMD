@@ -1,14 +1,9 @@
 using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using WordMD.Conversion;
-using WordMD.Core;
-using WordMD.Editors;
-
-namespace WordMD;
 
 class Program
-{ static Task<int> Main(string[] args)
+{
+    static Task<int> Main(string[] args)
     {
         var services = ConfigureServices();
         var serviceProvider = services.BuildServiceProvider();
@@ -88,7 +83,7 @@ class Program
         return Task.CompletedTask;
     }
 
-    private static Task HandleEditorOrderAsync(ServiceProvider serviceProvider, string[] editorOrder)
+    static Task HandleEditorOrderAsync(ServiceProvider serviceProvider, string[] editorOrder)
     {
         var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
         var editorConfig = serviceProvider.GetRequiredService<EditorConfiguration>();
@@ -116,7 +111,7 @@ class Program
         return Task.CompletedTask;
     }
 
-    private static Task HandleEditAsync(ServiceProvider serviceProvider, string docxPath, string? editorName)
+    static Task HandleEditAsync(ServiceProvider serviceProvider, string docxPath, string? editorName)
     {
         var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
         var editorConfig = serviceProvider.GetRequiredService<EditorConfiguration>();
@@ -155,7 +150,7 @@ class Program
         return launcher.LaunchAsync(docxPath);
     }
 
-    private static ServiceCollection ConfigureServices()
+    static ServiceCollection ConfigureServices()
     {
         var services = new ServiceCollection();
 

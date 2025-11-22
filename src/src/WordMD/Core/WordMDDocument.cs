@@ -1,28 +1,22 @@
-using DocumentFormat.OpenXml.Packaging;
-using Microsoft.Extensions.Logging;
-// ReSharper disable InconsistentNaming
-
-namespace WordMD.Core;
-
 public class WordMDDocument : IDisposable
 {
-    private readonly string _docxPath;
-    private readonly ILogger<WordMDDocument> _logger;
-    private WordprocessingDocument? _document;
+    string docPath;
+    ILogger<WordMDDocument> _logger;
+    WordprocessingDocument? document;
 
     public WordMDDocument(string docxPath, ILogger<WordMDDocument> logger)
     {
-        _docxPath = docxPath ?? throw new ArgumentNullException(nameof(docxPath));
+        docPath = docxPath ?? throw new ArgumentNullException(nameof(docxPath));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public void ExtractToDirectory(string targetDirectory)
     {
-        _logger.LogInformation("Extracting markdown and images from {DocxPath} to {TargetDirectory}", _docxPath, targetDirectory);
+        _logger.LogInformation("Extracting markdown and images from {DocxPath} to {TargetDirectory}", docPath, targetDirectory);
 
         Directory.CreateDirectory(targetDirectory);
 
-        using var document = WordprocessingDocument.Open(_docxPath, false);
+        using var document = WordprocessingDocument.Open(docPath, false);
         var embeddedPackages = document.MainDocumentPart?.EmbeddedPackageParts ?? [];
 
         foreach (var package in embeddedPackages)
@@ -43,9 +37,9 @@ public class WordMDDocument : IDisposable
 
     public void EmbedFromDirectory(string sourceDirectory)
     {
-        _logger.LogInformation("Embedding markdown and images from {SourceDirectory} to {DocxPath}", sourceDirectory, _docxPath);
+        _logger.LogInformation("Embedding markdown and images from {SourceDirectory} to {DocxPath}", sourceDirectory, docPath);
 
-        using var document = WordprocessingDocument.Open(_docxPath, true);
+        using var document = WordprocessingDocument.Open(docPath, true);
 
         // Remove existing embedded packages
         var existingPackages = document.MainDocumentPart?.EmbeddedPackageParts.ToList() ?? [];
@@ -70,9 +64,9 @@ public class WordMDDocument : IDisposable
 
     public void ApplyRestrictedEditing()
     {
-        _logger.LogInformation("Applying restricted editing to {DocxPath}", _docxPath);
+        _logger.LogInformation("Applying restricted editing to {DocxPath}", docPath);
 
-        using var document = WordprocessingDocument.Open(_docxPath, true);
+        using var document = WordprocessingDocument.Open(docPath, true);
         var settings = document.MainDocumentPart?.DocumentSettingsPart;
 
         if (settings == null)
@@ -85,7 +79,7 @@ public class WordMDDocument : IDisposable
         _logger.LogWarning("Restricted editing implementation requires proper OpenXML document protection");
     }
 
-    private static string GetFileName(EmbeddedPackagePart package, string relationshipId)
+    static string GetFileName(EmbeddedPackagePart package, string relationshipId)
     {
         // Try to get filename from content type or use relationship ID
         var contentType = package.ContentType;
@@ -101,7 +95,7 @@ public class WordMDDocument : IDisposable
         return $"{relationshipId}.{extension}";
     }
 
-    private static string GetContentType(string filePath)
+    static string GetContentType(string filePath)
     {
         var extension = Path.GetExtension(filePath).ToLowerInvariant();
         return extension switch
@@ -116,5 +110,5 @@ public class WordMDDocument : IDisposable
     }
 
     public void Dispose() =>
-        _document?.Dispose();
+        document?.Dispose();
 }

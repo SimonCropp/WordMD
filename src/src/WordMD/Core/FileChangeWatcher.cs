@@ -1,8 +1,3 @@
-using Microsoft.Extensions.Logging;
-using WordMD.Conversion;
-
-namespace WordMD.Core;
-
 public class FileChangeWatcher : IDisposable
 {
     private readonly string _directory;

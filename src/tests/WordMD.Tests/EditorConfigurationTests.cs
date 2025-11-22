@@ -1,6 +1,5 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
-using WordMD.Editors;
 
 [TestFixture]
 public class EditorConfigurationTests

@@ -1,19 +1,13 @@
-using Microsoft.Extensions.Logging;
-using WordMD.Core;
-using WordMD.Editors;
-
-namespace WordMD.Conversion;
-
 public class EditorLauncher
 {
-    private readonly WordMDDocument _document;
-    private readonly EditorInfo _editor;
-    private readonly MarkdownToWordConverter _converter;
-    private readonly RiderSettingsGenerator _riderSettings;
-    private readonly ILogger<EditorLauncher> _logger;
-    private string? _tempDirectory;
-    private Process? _editorProcess;
-    private FileChangeWatcher? _watcher;
+    WordMDDocument _document;
+    EditorInfo _editor;
+    MarkdownToWordConverter _converter;
+    RiderSettingsGenerator _riderSettings;
+    ILogger<EditorLauncher> _logger;
+    string? _tempDirectory;
+    Process? _editorProcess;
+    FileChangeWatcher? _watcher;
 
     public EditorLauncher(
         WordMDDocument document,
@@ -50,7 +44,7 @@ public class EditorLauncher
             if (!File.Exists(markdownFile))
             {
                 _logger.LogError("No markdown file found. Creating");
-                File.CreateText(markdownFile).Dispose();
+                await File.CreateText(markdownFile).DisposeAsync();
             }
 
             // Start file watcher
@@ -69,7 +63,7 @@ public class EditorLauncher
         }
     }
 
-    private async Task LaunchEditorAsync(string markdownFile, Cancel cancel)
+    async Task LaunchEditorAsync(string markdownFile, Cancel cancel)
     {
         var executablePath = _editor.GetExecutablePath();
         if (executablePath == null || !File.Exists(executablePath))
