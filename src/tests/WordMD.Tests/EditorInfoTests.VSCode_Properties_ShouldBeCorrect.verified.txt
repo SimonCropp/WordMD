@@ -1,6 +1,0 @@
-﻿{
-  Name: vscode,
-  DisplayName: Visual Studio Code,
-  ExecutableName: code,
-  CommandLineArgs: "{0}"
-}

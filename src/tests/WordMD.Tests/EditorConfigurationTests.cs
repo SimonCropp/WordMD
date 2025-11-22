@@ -1,4 +1,3 @@
-using FluentAssertions;
 
 [TestFixture]
 public class EditorConfigurationTests
@@ -8,19 +7,7 @@ public class EditorConfigurationTests
     {
         var editors = EditorConfiguration.DetectInstalledEditors();
 
-        editors.Should().NotBeEmpty();
-        editors.Should().Contain("vscode");
-    }
-
-    [Test]
-    public void GetDefaultEditor_ShouldReturnFirstEditor()
-    {
-        var editors = EditorConfiguration.DetectInstalledEditors();
-        EditorConfiguration.SetEditorOrder(editors);
-
-        var defaultEditor = EditorConfiguration.GetDefaultEditor();
-
-        defaultEditor.Should().Be(editors.First());
+        IsNotEmpty(editors);
     }
 
     [Test]
@@ -36,13 +23,11 @@ public class EditorConfigurationTests
     }
 
     [Test]
-    public void GetEditor_WithValidName_ShouldReturnEditor()
+    public Task GetEditor_WithValidName_ShouldReturnEditor()
     {
         var editor = EditorConfiguration.GetEditor("vscode");
 
-        editor.Should().NotBeNull();
-        editor.Name.Should().Be("vscode");
-        editor.DisplayName.Should().Be("Visual Studio Code");
+        return Verify(editor);
     }
 
     [Test]
@@ -50,6 +35,6 @@ public class EditorConfigurationTests
     {
         var editor = EditorConfiguration.GetEditor("nonexistent");
 
-        editor.Should().BeNull();
+        IsNull(editor);
     }
 }

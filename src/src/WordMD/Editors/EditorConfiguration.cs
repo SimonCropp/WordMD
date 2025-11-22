@@ -34,15 +34,18 @@ public class EditorConfiguration
     {
         Log.Information("Saving editor order: {EditorOrder}", string.Join(", ", editorOrder));
 
-        var config = new ConfigData {EditorOrder = editorOrder};
+        var config = new ConfigData
+        {
+            EditorOrder = editorOrder
+        };
         var json = JsonSerializer.Serialize(config, jsonSerializerOptions);
         File.WriteAllText(configPath, json);
     }
 
-    public static string GetDefaultEditor()
+    public static string? GetDefaultEditor()
     {
         var order = GetEditorOrder();
-        return order.FirstOrDefault() ?? EditorInfo.VSCode.Name;
+        return order.FirstOrDefault();
     }
 
     public static List<string> DetectInstalledEditors()
@@ -60,8 +63,7 @@ public class EditorConfiguration
 
         if (installed.Count == 0)
         {
-            Log.Warning("No markdown editors detected, using VSCode as default");
-            installed.Add(EditorInfo.VSCode.Name);
+            Log.Warning("No markdown editors detected");
         }
 
         return installed;

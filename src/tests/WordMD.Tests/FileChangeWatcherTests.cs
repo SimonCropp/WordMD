@@ -1,5 +1,3 @@
-using FluentAssertions;
-
 [TestFixture]
 public class FileChangeWatcherTests
 {
@@ -36,7 +34,7 @@ public class FileChangeWatcherTests
         // Wait for the watcher to detect the change
         await Task.Delay(1000);
 
-        changeDetected.Should().BeTrue();
+        IsTrue(changeDetected);
     }
 
     [Test]
@@ -60,7 +58,7 @@ public class FileChangeWatcherTests
         // Wait for the watcher to detect the change
         await Task.Delay(1000);
 
-        changeCount.Should().BeGreaterThan(0);
+        Greater(changeCount, 0);
     }
 
     [Test]
@@ -89,6 +87,6 @@ public class FileChangeWatcherTests
         await Task.Delay(1000);
 
         // Should have fewer callbacks than changes due to debouncing
-        changeCount.Should().BeLessThan(5);
+        Less(changeCount, 5);
     }
 }

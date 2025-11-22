@@ -1,0 +1,11 @@
+﻿{
+  Name: vscode,
+  DisplayName: Visual Studio Code,
+  ExecutableName: code,
+  CommandLineArgs: "{0}",
+  IsInstalled: {
+    Type: Func<bool>,
+    Target: EditorInfo.<>c,
+    Method: Boolean .cctor()
+  }
+}

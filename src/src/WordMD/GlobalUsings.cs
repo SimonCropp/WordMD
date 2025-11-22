@@ -10,4 +10,5 @@ global using Markdig.Syntax;
 global using Markdig.Syntax.Inlines;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
+global using Microsoft.Win32;
 global using Serilog;

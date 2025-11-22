@@ -1,6 +1,4 @@
-using Microsoft.Win32;
-
-public class RegistryManager
+public static class RegistryManager
 {
     const string ContextMenuPath = @"SOFTWARE\Classes\.docx\shell";
 
@@ -11,19 +9,19 @@ public class RegistryManager
         // Remove existing entries first
         RemoveContextMenu();
 
-            // Get the path to wordmd.exe
-            var wordmdPath = GetWordMDPath();
+        // Get the path to wordmd.exe
+        var wordmdPath = GetWordMDPath();
 
-            // Register "WordMD Edit" (default editor)
-            RegisterDefaultEdit(wordmdPath);
+        // Register "WordMD Edit" (default editor)
+        RegisterDefaultEdit(wordmdPath);
 
-            // Register "WordMD" with submenu
-            RegisterSubmenu(wordmdPath, editorOrder);
+        // Register "WordMD" with submenu
+        RegisterSubmenu(wordmdPath, editorOrder);
 
-            Log.Information("Context menu registered successfully");
+        Log.Information("Context menu registered successfully");
     }
 
-    public static void RemoveContextMenu()
+    static void RemoveContextMenu()
     {
         Log.Information("Removing WordMD context menu entries");
 
