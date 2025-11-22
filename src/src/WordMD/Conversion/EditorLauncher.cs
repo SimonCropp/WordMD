@@ -46,11 +46,11 @@ public class EditorLauncher
             }
 
             // Find the markdown file
-            var markdownFile = Directory.GetFiles(_tempDirectory, "*.md").FirstOrDefault();
-            if (markdownFile == null)
+            var markdownFile = Path.Combine(_tempDirectory, "word.md");
+            if (!File.Exists(markdownFile))
             {
-                _logger.LogError("No markdown file found in temp directory");
-                return;
+                _logger.LogError("No markdown file found. Creating");
+                File.CreateText(markdownFile).Dispose();
             }
 
             // Start file watcher
