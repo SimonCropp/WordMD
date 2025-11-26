@@ -4,6 +4,7 @@
 *.bmp binary
 *.tif binary
 *.zip binary
+*.docx binary
 *.nupkg binary
 
 

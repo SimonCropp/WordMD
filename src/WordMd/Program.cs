@@ -1,6 +1,6 @@
-static class Program
+public static class Program
 {
-    static async Task<int> Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
         Logging.Init();
         try
