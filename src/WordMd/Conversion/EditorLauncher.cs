@@ -1,21 +1,11 @@
-public class EditorLauncher
+public class EditorLauncher(
+    WordMdDocument document,
+    EditorInfo editor,
+    MarkdownToWordConverter converter)
 {
-    WordMdDocument document;
-    EditorInfo editor;
-    MarkdownToWordConverter converter;
     string? tempDirectory;
     Process? editorProcess;
     FileChangeWatcher? watcher;
-
-    public EditorLauncher(
-        WordMdDocument document,
-        EditorInfo editor,
-        MarkdownToWordConverter converter)
-    {
-        this.document = document ?? throw new ArgumentNullException(nameof(document));
-        this.editor = editor ?? throw new ArgumentNullException(nameof(editor));
-        this.converter = converter ?? throw new ArgumentNullException(nameof(converter));
-    }
 
     public async Task LaunchAsync(string docxPath, Cancel cancel = default)
     {

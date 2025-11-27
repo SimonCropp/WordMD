@@ -6,6 +6,12 @@ public class WordMdDocument(string docxPath)
 
         Directory.CreateDirectory(targetDirectory);
 
+        var fileInfo = new FileInfo(docxPath);
+        if (fileInfo.Length == 0)
+        {
+            return;
+        }
+
         using var document = WordprocessingDocument.Open(docxPath, false);
         var embeddedPackages = document.MainDocumentPart?.EmbeddedPackageParts ?? [];
 

@@ -17,10 +17,7 @@
     <ProjectReference Include="..\WordMd\WordMd.csproj" />
     <Using Include="NUnit.Framework.Legacy.ClassicAssert" Static="True" />
     <Using Include="NUnit.Framework.Assert" Static="True" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="empty.docx">
+    <None Update="*.docx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

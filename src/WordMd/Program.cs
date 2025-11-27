@@ -26,12 +26,14 @@ public static class Program
         // Add positional arguments for edit mode
         var docxPathArgument = new Argument<string?>("docx-path")
         {
-            Description = "Path to the .docx file to edit"
+            Description = "Path to the .docx file to edit",
+            Arity = ArgumentArity.ZeroOrOne
         };
 
         var editorNameArgument = new Argument<string?>("editor-name")
         {
-            Description = "Name of the editor to use"
+            Description = "Name of the editor to use",
+            Arity = ArgumentArity.ZeroOrOne
         };
 
         var rootCommand = new RootCommand("WordMD - Edit markdown documents within Word files")
@@ -45,26 +47,22 @@ public static class Program
             var docxPath = result.GetValue(docxPathArgument);
             var editorName = result.GetValue(editorNameArgument);
             var editorOrder = result.GetValue(editorOrderOption);
+
             // Determine mode based on arguments
-            if (docxPath is null && editorOrder?.Length == 0)
-            {
-                // Setup mode
-                return HandleSetupAsync();
-            }
-
-            if (docxPath is not null)
-            {
-                // Edit mode
-                return HandleEditAsync(docxPath, editorName);
-            }
-
             if (editorOrder?.Length > 0)
             {
                 // Update editor order
                 return HandleEditorOrderAsync(editorOrder);
             }
 
-            return Task.CompletedTask;
+            if (docxPath is not null)
+            {
+                // Edit mode - single arg treated as document path
+                return HandleEditAsync(docxPath, editorName);
+            }
+
+            // Setup mode - no arguments
+            return HandleSetupAsync();
         });
 
         var parseResult = rootCommand.Parse(args);

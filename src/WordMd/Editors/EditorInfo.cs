@@ -31,7 +31,10 @@ public record EditorInfo(
         "Typora",
         "typora.exe",
         "\"{0}\"",
-        () => FindInPath("typora.exe") != null || File.Exists(@"C:\Program Files\Typora\Typora.exe"));
+        () =>
+        {
+            return FindInPath("typora.exe") != null || File.Exists(@"C:\Program Files\Typora\Typora.exe");
+        });
 
     static EditorInfo MarkdownMonster { get; } = new(
         "markdownmonster",
@@ -49,10 +52,10 @@ public record EditorInfo(
 
     public static EditorInfo[] AllEditors { get; } =
     [
+        Typora,
         VSCode,
         Rider,
         Notepad,
-        Typora,
         MarkdownMonster,
         Obsidian
     ];

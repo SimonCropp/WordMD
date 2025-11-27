@@ -31,6 +31,7 @@ public class MarkdownToWordConverter
         }
 
         wordDocument.MainDocumentPart.Document.Save();
+        wordDocument.Save();
         Log.Information("Conversion completed successfully");
     }
 
