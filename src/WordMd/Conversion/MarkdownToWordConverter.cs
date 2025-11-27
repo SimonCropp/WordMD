@@ -14,9 +14,24 @@ public class MarkdownToWordConverter
         var markdown = File.ReadAllText(markdownPath);
         var document = Markdown.Parse(markdown, pipeline);
 
-        using var wordDocument = WordprocessingDocument.Open(docxPath, true);
-        var body = wordDocument.MainDocumentPart!.Document.Body!;
+        var fileInfo = new FileInfo(docxPath);
 
+        WordprocessingDocument OpenOrCreate()
+        {
+            if (fileInfo.Length == 0)
+            {
+                File.Delete(docxPath);
+                var create = WordprocessingDocument.Create(docxPath,WordprocessingDocumentType.Document);
+                var mainPart = create.AddMainDocumentPart();
+                mainPart.Document = new(new Body());
+                return create;
+            }
+
+            return WordprocessingDocument.Open(docxPath, true);
+        }
+
+        using var wordDocument = OpenOrCreate();
+        var body = wordDocument.MainDocumentPart!.Document.Body!;
         // Clear existing content (except sections with embedded packages)
         var elementsToRemove = body.Elements<Paragraph>().ToList();
         foreach (var element in elementsToRemove)
@@ -29,8 +44,6 @@ public class MarkdownToWordConverter
         {
             ConvertBlock(block, body);
         }
-
-        wordDocument.MainDocumentPart.Document.Save();
         wordDocument.Save();
         Log.Information("Conversion completed successfully");
     }
