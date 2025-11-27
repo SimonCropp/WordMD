@@ -21,9 +21,10 @@ public class MarkdownToWordConverter
             if (fileInfo.Length == 0)
             {
                 File.Delete(docxPath);
-                var create = WordprocessingDocument.Create(docxPath,WordprocessingDocumentType.Document);
+                var create = WordprocessingDocument.Create(docxPath, WordprocessingDocumentType.Document);
                 var mainPart = create.AddMainDocumentPart();
                 mainPart.Document = new(new Body());
+                create.Save();
                 return create;
             }
 
