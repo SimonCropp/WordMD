@@ -7,6 +7,7 @@ public class Launch
     [Explicit]
     public Task Empty() =>
         Program.Main([ProjectFiles.empty_docx]);
+
     [Test]
     [Explicit]
     public Task Run() =>
