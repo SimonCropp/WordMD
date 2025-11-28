@@ -1,6 +1,4 @@
-﻿using ProjectFilesGenerator;
-
-[TestFixture]
+﻿[TestFixture]
 public class Launch
 {
     [Test]
