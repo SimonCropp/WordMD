@@ -6,7 +6,6 @@ indent_style = space
 [*.cs]
 indent_size = 4
 charset = utf-8
-end_of_line = lf
 
 # Redundant accessor body
 resharper_redundant_accessor_body_highlighting = error
