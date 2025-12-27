@@ -1,6 +1,6 @@
 # <img src="https://raw.githubusercontent.com/SimonCropp/WordMD/master/src/icon.png" height="40px"> WordMD
 
-[![Build status](https://ci.appveyor.com/api/projects/status/mwwl3xe6drr2gn2a/branch/main?svg=true)](https://ci.appveyor.com/project/SimonCropp/wordmd)
+[![Build status](https://img.shields.io/appveyor/build/SimonCropp/wordmd)](https://ci.appveyor.com/project/SimonCropp/wordmd)
 [![NuGet Status](https://img.shields.io/nuget/v/WordMD.svg)](https://www.nuget.org/packages/WordMD/)
 
 
